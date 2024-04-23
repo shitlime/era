@@ -5,7 +5,7 @@
 <br>
 
 <p align="center">
-    <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/shitlime/era/ci.yaml">
+    <img alt="GitHub Actions Workflow Status" src="https://github.com/shitlime/era/actions/workflows/ci.yml/badge.svg?branch=main">
     <a href="https://github.com/shitlime/era/blob/main/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/shitlime/era"></a>
     <a href="https://openjdk.org/projects/jdk/21/"><img alt="Static Badge" src="https://img.shields.io/badge/JDK-21-brightgreen.svg?style=flat-square"></a>
 </p>
