@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: era
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    url: jdbc:sqlite::resources:static/sqlite/era.db
+#    username:
+#    password:
+
+shiro:
+  debug: true
+  ws:
+    client:
+      enable: false
+      url: ws://127.0.0.1:3001
+#  plugin-list:
+#    - com.shitlime.era.plugins.ExamplePlugin
+
+logging:
+  level:
+    root: debug
+    sql: error

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shitlime.era.mapper.DatasetMapper">
+    <update id="createTable">
+        create table ${tableName} (
+            key text not null,
+            `values` text not null
+        );
+    </update>
+
+    <delete id="dropTable">
+        drop table ${tableName}
+    </delete>
+
+    <select id="selectByKey" resultType="com.shitlime.era.pojo.entry.DataItem">
+        select * from ${tableName}
+        where key=#{key}
+    </select>
+
+    <select id="count" resultType="java.lang.Long">
+        select count(*) from ${tableName}
+    </select>
+
+    <insert id="insertList">
+        insert into ${tableName} (key, `values`) values
+        <foreach item="item" collection="dataItems" separator=",">
+            (#{item.key}, #{item.values})
+        </foreach>
+    </insert>
+
+    <insert id="insert">
+        insert into ${tableName} (key, `values`)
+        values (#{dataItem.key}, #{dataItem.values})
+    </insert>
+
+    <delete id="deleteByKey">
+        delete from ${tableName}
+        where key=#{key}
+    </delete>
+</mapper>

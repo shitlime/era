@@ -1,0 +1,38 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: era
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    url: jdbc:sqlite:resources/static/sqlite/era.db
+
+shiro:
+  debug: false
+  ws:
+    # 正向ws
+    client:
+      enable: true
+      url: ws://127.0.0.1:3001
+  plugin-list:
+    - com.shitlime.era.plugins.StatePlugin
+
+logging:
+  level:
+    root: debug
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+  mapper-locations: classpath:mapper/*.xml
+
+era:
+  resources:
+    path:
+      dataset:
+        path: resources/static/dataset
+        table-name-prefix: dataset_
+      sqlite: resources/static/sqlite
+  bot:
+    admin: ${era.bot.admin}  # list
+    cmd: "|"
