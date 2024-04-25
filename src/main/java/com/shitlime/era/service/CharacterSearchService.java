@@ -3,7 +3,7 @@ package com.shitlime.era.service;
 import com.mikuac.shiro.common.utils.ArrayMsgUtils;
 import com.mikuac.shiro.common.utils.ShiroUtils;
 import com.mikuac.shiro.model.ArrayMsg;
-import com.shitlime.era.common.Dataset;
+import com.shitlime.era.pojo.dto.Dataset;
 import com.shitlime.era.config.EraConfig;
 import com.shitlime.era.enums.DatasetTypeEnum;
 import com.shitlime.era.handle.impl.PicFileSearchHandle;
@@ -11,7 +11,7 @@ import com.shitlime.era.handle.impl.TxtLineSearchHandle;
 import com.shitlime.era.handle.impl.UnicodeSearchHandle;
 import com.shitlime.era.mapper.DatasetMapper;
 import com.shitlime.era.mapper.QuickSearchMapper;
-import com.shitlime.era.pojo.DatasetConfig;
+import com.shitlime.era.pojo.config.dataset.DatasetConfig;
 import com.shitlime.era.pojo.entry.QuickSearch;
 import com.shitlime.era.utils.FileUtils;
 import com.shitlime.era.utils.TableUtils;
@@ -38,7 +38,7 @@ import java.util.StringJoiner;
 @Slf4j
 @Service
 public class CharacterSearchService {
-    private ArrayList<Dataset> datasetList = new ArrayList<>();
+    private final ArrayList<Dataset> datasetList = new ArrayList<>();
     private boolean isLoaded = false;
 
     @Autowired
@@ -96,6 +96,7 @@ public class CharacterSearchService {
 
     /**
      * 根据 id, keyword 查询结果
+     *
      * @param datasetId
      * @param keyword
      * @return
@@ -121,6 +122,7 @@ public class CharacterSearchService {
 
     /**
      * 根据 keyword 查询所有数据集结果
+     *
      * @param keyword
      * @return
      */
@@ -151,6 +153,7 @@ public class CharacterSearchService {
 
     /**
      * 设置快捷查询
+     *
      * @param quickSearch
      */
     public List<ArrayMsg> setQuickSearch(QuickSearch quickSearch) {
@@ -213,6 +216,7 @@ public class CharacterSearchService {
 
     /**
      * 清空快捷查询设置
+     *
      * @param userId
      */
     public void clearQuickSearch(Long userId) {
@@ -222,6 +226,7 @@ public class CharacterSearchService {
 
     /**
      * 列出所有数据集
+     *
      * @return
      */
     public List<ArrayMsg> datasetList() {
@@ -239,7 +244,7 @@ public class CharacterSearchService {
             joiner.add(String.format("%s.『%s』%s条",
                     datasetConfig.getId(),
                     datasetConfig.getName(),
-                    size != 0? size : "-"));
+                    size != 0 ? size : "-"));
         });
         if (!isLoaded) {
             joiner.add("= 正在装载中... =");
@@ -251,6 +256,7 @@ public class CharacterSearchService {
 
     /**
      * 加载数据集配置文件
+     *
      * @param file
      * @throws IOException
      */
@@ -267,6 +273,7 @@ public class CharacterSearchService {
 
     /**
      * unicode数据集搜索逻辑
+     *
      * @param dataset
      * @param string
      * @return
@@ -286,6 +293,7 @@ public class CharacterSearchService {
 
     /**
      * 图片文件数据集搜索逻辑
+     *
      * @param dataset
      * @param string
      * @return
@@ -306,6 +314,7 @@ public class CharacterSearchService {
 
     /**
      * 文本行数据集搜索逻辑
+     *
      * @param dataset
      * @param string
      * @return
@@ -325,6 +334,7 @@ public class CharacterSearchService {
 
     /**
      * 判断是否存在该 id 的数据集
+     *
      * @param datasetId
      * @return
      */
@@ -339,6 +349,7 @@ public class CharacterSearchService {
 
     /**
      * 根据数据集 id 获取数据集 name
+     *
      * @param datasetId
      * @return name or null
      */

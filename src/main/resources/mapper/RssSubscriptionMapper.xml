@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shitlime.era.mapper.RssSubscriptionMapper">
+    <update id="createTable">
+        create table rss_subscribe (
+            id integer primary key autoincrement not null,
+            source_id integer not null,
+            group_id integer,
+            user_id integer not null,
+            enable boolean not null,
+            update_time datetime not null,
+            create_time datetime not null
+        );
+    </update>
+
+    <delete id="dropTable">
+        drop table rss_subscribe;
+    </delete>
+
+    <insert id="insert" parameterType="com.shitlime.era.pojo.entry.RssSubscription">
+        insert into rss_subscribe
+            (id, source_id, group_id, user_id, enable, update_time, create_time)
+        values
+            (#{id}, #{sourceId}, #{groupId}, #{userId}, #{enable}, #{updateTime}, #{createTime})
+    </insert>
+
+    <select id="show" resultType="com.shitlime.era.pojo.entry.RssSubscription">
+        select * from rss_subscribe
+        <where>
+            <if test="groupId != null">
+                and group_id = #{groupId}
+            </if>
+            <if test="groupId == null">
+                and group_id is null
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectAllSourceId" resultType="java.lang.Long">
+        select source_id from rss_subscribe
+        where enable=true
+        group by source_id
+    </select>
+
+    <select id="selectBySourceId" resultType="com.shitlime.era.pojo.entry.RssSubscription">
+        select * from rss_subscribe
+        where source_id=#{sourceId}
+    </select>
+
+    <delete id="delete">
+        delete from rss_subscribe
+        where id=#{id}
+    </delete>
+
+    <update id="enable">
+        update rss_subscribe
+        set enable=true
+        where id=#{id}
+    </update>
+
+    <update id="disable">
+        update rss_subscribe
+        set enable=false
+        where id=#{id}
+    </update>
+
+</mapper>

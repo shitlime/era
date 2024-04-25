@@ -7,12 +7,12 @@ import com.mikuac.shiro.dto.event.message.AnyMessageEvent;
 import com.mikuac.shiro.model.ArrayMsg;
 import com.shitlime.era.config.EraConfig;
 import com.shitlime.era.service.StateService;
+import com.shitlime.era.utils.EraBotUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * 运行状态插件
@@ -22,12 +22,15 @@ import java.util.Objects;
 @Component
 public class StatePlugin extends BotPlugin {
     @Autowired
-    EraConfig eraConfig;
+    private EraConfig eraConfig;
+    @Autowired
+    private EraBotUtils eraBotUtils;
     @Autowired
     private StateService stateService;
 
     /**
      * 查看运行状态
+     *
      * @param bot   {@link Bot}
      * @param event {@link AnyMessageEvent}
      * @return
@@ -35,26 +38,14 @@ public class StatePlugin extends BotPlugin {
     @Override
     public int onAnyMessage(Bot bot, AnyMessageEvent event) {
         String cmd = String.format("%sstate", eraConfig.getBot().getCmd());
-        if (cmd.equals(event.getMessage()) && isAdmin(event.getSender().getUserId())) {
+        if (cmd.equals(event.getMessage()) &&
+                eraBotUtils.isAdmin(event.getSender().getUserId())
+        ) {
             log.info("获取运行状态");
             List<ArrayMsg> msg = stateService.getState();
             bot.sendMsg(event, msg, true);
             return MESSAGE_BLOCK;
         }
         return MESSAGE_IGNORE;
-    }
-
-    /**
-     * 管理员权限验证
-     * @param uid
-     * @return
-     */
-    public boolean isAdmin(Long uid) {
-        for (Long adminId : eraConfig.getBot().getAdmin()) {
-            if (Objects.equals(uid, adminId)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

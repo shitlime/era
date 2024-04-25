@@ -1,6 +1,6 @@
 package com.shitlime.era.handle.impl;
 
-import com.shitlime.era.common.Dataset;
+import com.shitlime.era.pojo.dto.Dataset;
 import com.shitlime.era.handle.DatasetSearchHandle;
 import com.shitlime.era.utils.UnicodeUtils;
 import org.springframework.stereotype.Component;

@@ -1,6 +1,6 @@
 package com.shitlime.era.handle;
 
-import com.shitlime.era.common.Dataset;
+import com.shitlime.era.pojo.dto.Dataset;
 
 public interface DatasetSearchHandle {
     /**

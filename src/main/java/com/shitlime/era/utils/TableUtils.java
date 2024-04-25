@@ -9,7 +9,7 @@ import java.util.ArrayList;
 @Component
 public class TableUtils {
     @Autowired
-    SqliteMapper sqliteMapper;
+    private SqliteMapper sqliteMapper;
 
     /**
      * 判断该数据库表是否存在

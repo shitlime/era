@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.shitlime"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.3-SNAPSHOT"
 
 java {
 	sourceCompatibility = JavaVersion.VERSION_21
@@ -33,6 +33,8 @@ dependencies {
 	implementation("org.xerial:sqlite-jdbc:3.45.3.0")
 	// yaml
 	implementation("org.yaml:snakeyaml:2.2")
+	// rome
+	implementation("com.rometools:rome:2.1.0")
 }
 
 tasks.withType<Test> {

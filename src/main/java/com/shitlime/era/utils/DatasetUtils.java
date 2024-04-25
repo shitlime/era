@@ -10,7 +10,7 @@ import java.util.ArrayList;
 @Component
 public class DatasetUtils {
     @Autowired
-    DatasetMapper datasetMapper;
+    private DatasetMapper datasetMapper;
 
     /**
      * 比较两个值的大小

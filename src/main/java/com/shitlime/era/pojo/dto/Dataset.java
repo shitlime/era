@@ -1,6 +1,6 @@
-package com.shitlime.era.common;
+package com.shitlime.era.pojo.dto;
 
-import com.shitlime.era.pojo.DatasetConfig;
+import com.shitlime.era.pojo.config.dataset.DatasetConfig;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

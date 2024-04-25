@@ -1,10 +1,10 @@
 package com.shitlime.era.handle.impl;
 
-import com.shitlime.era.common.Dataset;
+import com.shitlime.era.pojo.dto.Dataset;
 import com.shitlime.era.enums.KeyTypeEnum;
 import com.shitlime.era.mapper.DatasetMapper;
 import com.shitlime.era.pojo.entry.DataItem;
-import com.shitlime.era.pojo.DatasetConfig;
+import com.shitlime.era.pojo.config.dataset.DatasetConfig;
 import com.shitlime.era.handle.DatasetSearchHandle;
 import com.shitlime.era.utils.DatasetUtils;
 import com.shitlime.era.utils.TableUtils;

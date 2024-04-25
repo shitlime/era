@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shitlime.era.mapper.RssSourceMapper">
+    <update id="createTable">
+        create table rss_source (
+            id integer primary key autoincrement not null,
+            url text unique not null,
+            title text not null,
+            latest_title text not null,
+            latest_link text not null,
+            fetch_time datetime not null,
+            update_time datetime not null,
+            create_time datetime not null
+        );
+    </update>
+
+    <delete id="dropTable">
+        drop table rss_source;
+    </delete>
+
+    <insert id="insert" parameterType="com.shitlime.era.pojo.entry.RssSource"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into rss_source
+            (id, url, title, latest_title, latest_link, fetch_time, update_time, create_time)
+        values
+            (#{id}, #{url}, #{title}, #{latestTitle}, #{latestLink}, #{fetchTime},
+             #{updateTime}, #{createTime})
+    </insert>
+
+    <select id="selectById" resultType="com.shitlime.era.pojo.entry.RssSource">
+        select * from rss_source
+        where id=#{id}
+    </select>
+
+    <select id="selectByIds" resultType="com.shitlime.era.pojo.entry.RssSource">
+        select * from rss_source
+        <where>
+            <foreach item="item" index="index" collection="ids"
+                     open="id in (" separator="," close=")" nullable="true">
+                #{item}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="selectByUrl" resultType="com.shitlime.era.pojo.entry.RssSource">
+        select * from rss_source
+        where url=#{url}
+    </select>
+
+    <delete id="delete">
+        delete from rss_source
+        where id=#{id}
+    </delete>
+
+    <update id="fetch" parameterType="com.shitlime.era.pojo.entry.RssSource">
+        update rss_source
+        set fetch_time=#{fetchTime}, latest_title=#{latestTitle}, latest_link=#{latestLink}
+        where id=#{id}
+    </update>
+</mapper>

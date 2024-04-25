@@ -16,6 +16,7 @@ shiro:
       url: ws://127.0.0.1:3001
   plugin-list:
     - com.shitlime.era.plugins.StatePlugin
+    - com.shitlime.era.plugins.RssManagePlugin
 
 logging:
   level:
@@ -34,5 +35,7 @@ era:
         table-name-prefix: dataset_
       sqlite: resources/static/sqlite
   bot:
+    name: era
+    id: ${era.bot.id}
     admin: ${era.bot.admin}  # list
     cmd: "|"

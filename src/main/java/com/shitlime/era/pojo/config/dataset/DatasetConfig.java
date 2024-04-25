@@ -1,4 +1,4 @@
-package com.shitlime.era.pojo;
+package com.shitlime.era.pojo.config.dataset;
 
 import com.shitlime.era.enums.DatasetTypeEnum;
 import lombok.Data;
