@@ -17,6 +17,19 @@ shiro:
   plugin-list:
     - com.shitlime.era.plugins.StatePlugin
     - com.shitlime.era.plugins.RssManagePlugin
+  # 限速器（令牌桶算法）
+  limiter:
+    # 是否启用限速器
+    enable: true
+    # 补充速率（每秒补充的令牌数量）
+    rate: 3
+    # 令牌桶容量
+    capacity: 5
+    # 如果该值为 false 时，当令牌获取失败则会直接丢次本次请求
+    # 如果该值为 true 时，当令牌获取失败则会阻塞当前线程，后续任务将被添加到等待队列
+    awaitTask: true
+    # 等待超时
+    timeout: 10
 
 logging:
   level:

@@ -8,8 +8,7 @@
             id integer primary key autoincrement not null,
             url text unique not null,
             title text not null,
-            latest_title text not null,
-            latest_link text not null,
+            latest_feed text not null,
             fetch_time datetime not null,
             update_time datetime not null,
             create_time datetime not null
@@ -23,9 +22,9 @@
     <insert id="insert" parameterType="com.shitlime.era.pojo.entry.RssSource"
             useGeneratedKeys="true" keyProperty="id">
         insert into rss_source
-            (id, url, title, latest_title, latest_link, fetch_time, update_time, create_time)
+            (id, url, title, latest_feed, fetch_time, update_time, create_time)
         values
-            (#{id}, #{url}, #{title}, #{latestTitle}, #{latestLink}, #{fetchTime},
+            (#{id}, #{url}, #{title}, #{latestFeed}, #{fetchTime},
              #{updateTime}, #{createTime})
     </insert>
 
@@ -56,7 +55,7 @@
 
     <update id="fetch" parameterType="com.shitlime.era.pojo.entry.RssSource">
         update rss_source
-        set fetch_time=#{fetchTime}, latest_title=#{latestTitle}, latest_link=#{latestLink}
+        set fetch_time=#{fetchTime}, latest_feed=#{latestFeed}
         where id=#{id}
     </update>
 </mapper>

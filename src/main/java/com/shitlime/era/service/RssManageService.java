@@ -1,7 +1,9 @@
 package com.shitlime.era.service;
 
+import com.alibaba.fastjson2.JSON;
 import com.mikuac.shiro.common.utils.ArrayMsgUtils;
 import com.mikuac.shiro.model.ArrayMsg;
+import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
@@ -47,10 +49,12 @@ public class RssManageService {
         List<RssSubscription> rssSubscriptions = rssSubscriptionMapper
                 .show(rss.getGroupId(), rss.getUserId());
         List<Long> ids = rssSubscriptions.stream().map(RssSubscription::getSourceId).toList();
-        List<RssSource> rssSources = rssSourceMapper.selectByIds(ids);
+        if (ids!=null && !ids.isEmpty()) {
+            List<RssSource> rssSources = rssSourceMapper.selectByIds(ids);
 
-        if (rssSources.stream().anyMatch(r -> rss.getUrl().equals(r.getUrl()))) {
-            return ArrayMsgUtils.builder().text("订阅失败，该URL已经订阅过。").buildList();
+            if (rssSources.stream().anyMatch(r -> rss.getUrl().equals(r.getUrl()))) {
+                return ArrayMsgUtils.builder().text("订阅失败，该URL已经订阅过。").buildList();
+            }
         }
 
         RssSource rssSource = rssSourceMapper.selectByUrl(rss.getUrl());
@@ -61,8 +65,9 @@ public class RssManageService {
             rssSource = new RssSource();
             rssSource.setUrl(rss.getUrl());
             rssSource.setTitle(feed.getTitle());
-            rssSource.setLatestLink(feed.getEntries().getFirst().getLink());
-            rssSource.setLatestTitle(feed.getEntries().getFirst().getTitle());
+            String feedString = JSON.toJSONString(feed.getEntries().stream()
+                    .map(SyndEntry::getLink).toList());
+            rssSource.setLatestFeed(feedString);
             rssSource.setFetchTime(now);
             rssSource.setUpdateTime(now);
             rssSource.setCreateTime(now);
@@ -92,16 +97,19 @@ public class RssManageService {
     public List<ArrayMsg> showRss(Long groupId, Long userId) {
         checkTableExist();
 
-        StringJoiner joiner = new StringJoiner("\n");
-
         List<RssSubscription> rssSubscriptions = rssSubscriptionMapper.show(groupId, userId);
+
+        if (rssSubscriptions == null || rssSubscriptions.isEmpty()) {
+            return ArrayMsgUtils.builder().text("暂无订阅").buildList();
+        }
+
+        StringJoiner joiner = new StringJoiner("\n");
         for (int i = 0; i < rssSubscriptions.size(); i++) {
             RssSubscription rss = rssSubscriptions.get(i);
             RssSource rssSource = rssSourceMapper.selectById(rss.getSourceId());
             joiner.add(String.format("%s.[%s]%s",
                     i + 1, rss.getEnable()? "已启用":"已禁用", rssSource.getTitle()));
         }
-
         return ArrayMsgUtils.builder().text(joiner.toString()).buildList();
     }
 
@@ -155,9 +163,10 @@ public class RssManageService {
                     .selectById(rssSubscription.getSourceId());
             SyndFeed feed = new SyndFeedInput().build(
                     new XmlReader(new URL(rssSource.getUrl())));
+            String feedString = JSON.toJSONString(feed.getEntries().stream()
+                    .map(SyndEntry::getLink).toList());
+            rssSource.setLatestFeed(feedString);
             rssSource.setFetchTime(LocalDateTime.now());
-            rssSource.setLatestTitle(feed.getEntries().getFirst().getTitle());
-            rssSource.setLatestLink(feed.getEntries().getFirst().getLink());
             rssSourceMapper.fetch(rssSource);
             rssSubscriptionMapper.enable(rssSubscription.getId());
             return ArrayMsgUtils.builder()

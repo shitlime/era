@@ -1,5 +1,6 @@
 package com.shitlime.era.task;
 
+import com.alibaba.fastjson2.JSON;
 import com.mikuac.shiro.common.utils.ArrayMsgUtils;
 import com.mikuac.shiro.core.Bot;
 import com.mikuac.shiro.core.BotContainer;
@@ -45,7 +46,9 @@ public class RssTask {
     @Scheduled(cron = "0 1/12 * * * ?")
     @SneakyThrows(value = {IOException.class, FeedException.class})
     public void fetchRss() {
-        if (!tableUtils.isExist(RssSubscriptionMapper.tableName)) {
+        if (!tableUtils.isExist(RssSubscriptionMapper.tableName)
+                || !tableUtils.isExist(RssSourceMapper.tableName)
+        ) {
             return;
         }
 
@@ -55,48 +58,52 @@ public class RssTask {
         List<RssSource> rssSources = rssSourceMapper.selectByIds(sourceIds);
 
         for (RssSource rssSource : rssSources) {
+            List<String> latestFeed = JSON.parseArray(rssSource.getLatestFeed(), String.class);
             String url = rssSource.getUrl();
             SyndFeed feed = new SyndFeedInput().build(new XmlReader(new URL(url)));
 
-            if (!rssSource.getLatestLink().equals(feed.getEntries().getFirst().getLink())) {
-                for (SyndEntry entry : feed.getEntries()) {
-                    if (!rssSource.getLatestLink().equals(entry.getTitle())) {
-                        StringJoiner joiner = new StringJoiner("\n");
-                        if (entry.getTitle()!=null) {
-                            joiner.add(String.format("%s", entry.getTitle()));
-                        }
-                        if (entry.getLink()!=null) {
-                            joiner.add(entry.getLink());
-                        }
-                        if (rssSource.getTitle()!=null) {
-                            joiner.add(String.format("rss:〔%s〕", rssSource.getTitle()));
-                        }
-                        List<ArrayMsg> msg = ArrayMsgUtils.builder()
-                                .text(joiner.toString()).buildList();
+            boolean hasUpdate = false;
+            for (SyndEntry entry : feed.getEntries()) {
+                if (latestFeed.stream().noneMatch(l -> l.equals(entry.getLink()))) {
+                    // 如果有新的entry
+                    hasUpdate = true;
 
-                        List<RssSubscription> rssSubscriptions = rssSubscriptionMapper
-                                .selectBySourceId(rssSource.getId());
-                        for (RssSubscription rssSubscription : rssSubscriptions) {
-                            Bot bot = botContainer.robots.get(eraConfig.getBot().getId());
-                            if (rssSubscription.getGroupId() != null) {
-                                bot.sendGroupMsg(rssSubscription.getGroupId(), msg, true);
-                            } else {
-                                bot.sendPrivateMsg(rssSubscription.getUserId(), msg, true);
-                            }
-                        }
-
-                        log.info("{}有新的条目：{}。", feed.getTitle(), entry.getTitle());
-                    } else {
-                        break;
+                    // 构建并发送消息
+                    StringJoiner joiner = new StringJoiner("\n");
+                    if (entry.getTitle()!=null) {
+                        joiner.add(String.format("%s", entry.getTitle()));
                     }
-                }
+                    if (entry.getLink()!=null) {
+                        joiner.add(entry.getLink());
+                    }
+                    if (rssSource.getTitle()!=null) {
+                        joiner.add(String.format("rss:〔%s〕", rssSource.getTitle()));
+                    }
+                    List<ArrayMsg> msg = ArrayMsgUtils.builder()
+                            .text(joiner.toString()).buildList();
 
-                // 发送完订阅后更新数据库
-                rssSource.setLatestLink(feed.getEntries().getFirst().getLink());
-                rssSource.setLatestTitle(feed.getEntries().getFirst().getTitle());
+                    List<RssSubscription> rssSubscriptions = rssSubscriptionMapper
+                            .selectBySourceId(rssSource.getId());
+                    for (RssSubscription rssSubscription : rssSubscriptions) {
+                        Bot bot = botContainer.robots.get(eraConfig.getBot().getId());
+                        if (rssSubscription.getGroupId() != null) {
+                            bot.sendGroupMsg(rssSubscription.getGroupId(), msg, true);
+                        } else {
+                            bot.sendPrivateMsg(rssSubscription.getUserId(), msg, true);
+                        }
+                    }
+
+                    log.info("{}有新的条目：{}。", feed.getTitle(), entry.getTitle());
+                }
+            }
+            if (hasUpdate) {
+                // 更新数据库
+                rssSource.setLatestFeed(JSON.toJSONString(feed.getEntries().stream()
+                        .map(SyndEntry::getLink).toList()));
                 rssSource.setFetchTime(LocalDateTime.now());
                 rssSourceMapper.fetch(rssSource);
             }
         }
+        log.info("rss订阅更新任务执行完毕。");
     }
 }

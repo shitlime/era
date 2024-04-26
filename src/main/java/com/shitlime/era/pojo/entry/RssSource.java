@@ -12,8 +12,7 @@ public class RssSource {
     private Long id;
     private String url;
     private String title;
-    private String latestTitle;
-    private String latestLink;
+    private String latestFeed;
     private LocalDateTime fetchTime;
     private LocalDateTime updateTime;
     private LocalDateTime createTime;
