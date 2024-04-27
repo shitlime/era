@@ -2,6 +2,7 @@ package com.shitlime.era.task;
 
 import com.alibaba.fastjson2.JSON;
 import com.mikuac.shiro.common.utils.ArrayMsgUtils;
+import com.mikuac.shiro.common.utils.ShiroUtils;
 import com.mikuac.shiro.core.Bot;
 import com.mikuac.shiro.core.BotContainer;
 import com.mikuac.shiro.model.ArrayMsg;
@@ -19,6 +20,7 @@ import com.shitlime.era.utils.TableUtils;
 import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -26,7 +28,9 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 
 @Slf4j
@@ -55,6 +59,10 @@ public class RssTask {
         log.info("执行rss订阅更新任务。");
 
         List<Long> sourceIds = rssSubscriptionMapper.selectAllSourceId();
+        if (sourceIds==null || sourceIds.isEmpty()) {
+            log.info("没有任何启用的rss订阅。");
+            return;
+        }
         List<RssSource> rssSources = rssSourceMapper.selectByIds(sourceIds);
 
         for (RssSource rssSource : rssSources) {
@@ -68,28 +76,41 @@ public class RssTask {
                     // 如果有新的entry
                     hasUpdate = true;
 
-                    // 构建并发送消息
+                    // 构建消息
                     StringJoiner joiner = new StringJoiner("\n");
-                    if (entry.getTitle()!=null) {
+                    if (entry.getTitle() != null) {
                         joiner.add(String.format("%s", entry.getTitle()));
                     }
-                    if (entry.getLink()!=null) {
-                        joiner.add(entry.getLink());
+                    if (entry.getDescription() != null &&
+                        !entry.getTitle().equals(entry.getDescription().getValue())
+                    ) {
+                        String description = entry.getDescription().getValue().trim();
+                        if ("text/html".equals(entry.getDescription().getType())) {
+                            description = Jsoup.parse(description).text();
+                        }
+                        joiner.add("");
+                        joiner.add(description);
                     }
-                    if (rssSource.getTitle()!=null) {
-                        joiner.add(String.format("rss:〔%s〕", rssSource.getTitle()));
+                    if (rssSource.getTitle() != null) {
+                        joiner.add(String.format("RSS:〔%s〕", rssSource.getTitle()));
                     }
                     List<ArrayMsg> msg = ArrayMsgUtils.builder()
                             .text(joiner.toString()).buildList();
 
+                    List<String> msgList = new ArrayList<>();
+                    msgList.add(ShiroUtils.arrayMsgToCode(msg));
+                    msgList.add(entry.getLink());
+                    List<Map<String, Object>> fwmsg = ShiroUtils.generateForwardMsg(msgList);
+
+                    // 给所有订阅者发送消息
                     List<RssSubscription> rssSubscriptions = rssSubscriptionMapper
                             .selectBySourceId(rssSource.getId());
                     for (RssSubscription rssSubscription : rssSubscriptions) {
                         Bot bot = botContainer.robots.get(eraConfig.getBot().getId());
                         if (rssSubscription.getGroupId() != null) {
-                            bot.sendGroupMsg(rssSubscription.getGroupId(), msg, true);
+                            bot.sendGroupForwardMsg(rssSubscription.getGroupId(), fwmsg);
                         } else {
-                            bot.sendPrivateMsg(rssSubscription.getUserId(), msg, true);
+                            bot.sendPrivateForwardMsg(rssSubscription.getUserId(), fwmsg);
                         }
                     }
 

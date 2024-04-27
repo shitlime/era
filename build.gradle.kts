@@ -35,6 +35,8 @@ dependencies {
 	implementation("org.yaml:snakeyaml:2.2")
 	// rome
 	implementation("com.rometools:rome:2.1.0")
+	// jsoup
+	implementation("org.jsoup:jsoup:1.17.2")
 }
 
 tasks.withType<Test> {
