@@ -14,15 +14,17 @@
 
 ## 说明
 
-依拉是专用于处理字符数据查询的基于 [Shiro](https://github.com/MisakaTAT/Shiro) 框架的 Bot 。
+依拉是 ~~专用于处理字符数据查询的~~ 基于 [Shiro](https://github.com/MisakaTAT/Shiro) 框架的 Bot 。
+
 
 ## 运行
 
-下载或编译jar，复制一份 `application.yml` 并修改其中参数后，执行：
+[下载](https://github.com/shitlime/era/actions/workflows/ci.yml)或编译jar，复制一份 `src/main/resources/application.yml` 配置文件，并修改其中参数后，执行：
 
 ```shell
-java -Dspring.config.location=file:application.yml -jar era-0.0.1-SNAPSHOT.jar
+java -Dspring.config.location=file:application.yml -jar era-*.jar
 ```
+
 
 ## 免责声明
 
