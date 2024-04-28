@@ -193,14 +193,17 @@ public class CharacterSearchService {
      * @return
      */
     public List<ArrayMsg> quickSearch(QuickSearch quickSearch, String keyword) {
-        if (tableUtils.isExist(QuickSearchMapper.tableName)) {
+        if (!tableUtils.isExist(QuickSearchMapper.tableName)) {
+            quickSearchMapper.createTable();
+        } else {
             // 优先匹配群号和用户号，没有时尝试只匹配群号，最后尝试匹配用户号
             QuickSearch uid = new QuickSearch();
             uid.setUserId(quickSearch.getUserId());
             QuickSearch gid = new QuickSearch();
             gid.setGroupId(quickSearch.getGroupId());
             List<QuickSearch> quickSearchList = quickSearchMapper.select(quickSearch);
-            quickSearchList = (quickSearchList == null || quickSearchList.isEmpty()) ?
+            quickSearchList = (gid.getGroupId() != null &&
+                    (quickSearchList == null || quickSearchList.isEmpty())) ?
                     quickSearchMapper.select(gid) : quickSearchList;
             quickSearchList = (quickSearchList == null || quickSearchList.isEmpty()) ?
                     quickSearchMapper.select(uid) : quickSearchList;
@@ -208,10 +211,11 @@ public class CharacterSearchService {
                 QuickSearch search = quickSearchList.getFirst();
                 return searchById(search.getDatasetId(), keyword);
             }
-        } else {
-            quickSearchMapper.createTable();
         }
-        return ArrayMsgUtils.builder().text("未设置快捷查询").buildList();
+        return ArrayMsgUtils.builder()
+                .text(String.format("未设置快捷查询，可通过“%s　set　<数据集id>”设置",
+                        quickSearch.getPrefix()))
+                .buildList();
     }
 
     /**
