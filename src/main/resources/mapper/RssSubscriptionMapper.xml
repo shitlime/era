@@ -52,6 +52,11 @@
         where source_id=#{sourceId}
     </select>
 
+    <select id="selectEnableBySourceId" resultType="com.shitlime.era.pojo.entry.RssSubscription">
+        select * from rss_subscribe
+        where source_id=#{sourceId} and enable=true
+    </select>
+
     <delete id="delete">
         delete from rss_subscribe
         where id=#{id}

@@ -103,7 +103,7 @@ public class RssTask {
 
                     // 给所有订阅者发送消息
                     List<RssSubscription> rssSubscriptions = rssSubscriptionMapper
-                            .selectBySourceId(rssSource.getId());
+                            .selectEnableBySourceId(rssSource.getId());
                     for (RssSubscription rssSubscription : rssSubscriptions) {
                         Bot bot = botContainer.robots.get(eraConfig.getBot().getId());
                         if (rssSubscription.getGroupId() != null) {

@@ -57,4 +57,6 @@ public interface RssSubscriptionMapper {
     public List<Long> selectAllSourceId();
 
     public List<RssSubscription> selectBySourceId(Long sourceId);
+    public List<RssSubscription> selectEnableBySourceId(Long sourceId);
+
 }
