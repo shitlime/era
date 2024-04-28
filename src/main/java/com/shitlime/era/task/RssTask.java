@@ -90,10 +90,9 @@ public class RssTask {
                         }
                         joiner.add("");
                         joiner.add(description);
+                        joiner.add("");
                     }
-                    if (rssSource.getTitle() != null) {
-                        joiner.add(String.format("RSS:〔%s〕", rssSource.getTitle()));
-                    }
+                    joiner.add(String.format("RSS:〔%s〕", rssSource.getTitle()));
                     List<ArrayMsg> msg = ArrayMsgUtils.builder()
                             .text(joiner.toString()).buildList();
 
