@@ -136,7 +136,7 @@ public class RssManagePlugin extends SessionPlugin {
             ArrayMsg arrayMsg = new ArrayMsg();
             arrayMsg.setType(MsgTypeEnum.text);
             HashMap<String, String> map = new HashMap<>();
-            map.put("text", "> 输入要删除的编号");
+            map.put("text", "\n> 输入要删除的编号");
             arrayMsg.setData(map);
             msg.add(arrayMsg);
             bot.sendMsg(event, msg, true);
@@ -149,7 +149,7 @@ public class RssManagePlugin extends SessionPlugin {
             ArrayMsg arrayMsg = new ArrayMsg();
             arrayMsg.setType(MsgTypeEnum.text);
             HashMap<String, String> map = new HashMap<>();
-            map.put("text", "> 输入要启用的编号");
+            map.put("text", "\n> 输入要启用的编号");
             arrayMsg.setData(map);
             msg.add(arrayMsg);
             bot.sendMsg(event, msg, true);
@@ -161,7 +161,7 @@ public class RssManagePlugin extends SessionPlugin {
             ArrayMsg arrayMsg = new ArrayMsg();
             arrayMsg.setType(MsgTypeEnum.text);
             HashMap<String, String> map = new HashMap<>();
-            map.put("text", "> 输入要禁用的编号");
+            map.put("text", "\n> 输入要禁用的编号");
             arrayMsg.setData(map);
             msg.add(arrayMsg);
             bot.sendMsg(event, msg, true);
