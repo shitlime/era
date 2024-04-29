@@ -48,7 +48,6 @@ public class RssTask {
     private TableUtils tableUtils;
 
     @Scheduled(cron = "0 1/12 * * * ?")
-    @SneakyThrows(value = {IOException.class, FeedException.class})
     public void fetchRss() {
         if (!tableUtils.isExist(RssSubscriptionMapper.tableName)
                 || !tableUtils.isExist(RssSourceMapper.tableName)
@@ -68,7 +67,13 @@ public class RssTask {
         for (RssSource rssSource : rssSources) {
             List<String> latestFeed = JSON.parseArray(rssSource.getLatestFeed(), String.class);
             String url = rssSource.getUrl();
-            SyndFeed feed = new SyndFeedInput().build(new XmlReader(new URL(url)));
+            SyndFeed feed;
+            try {
+                feed = new SyndFeedInput().build(new XmlReader(new URL(url)));
+            } catch (FeedException | IOException e) {
+                log.warn(e.toString());
+                continue;
+            }
 
             boolean hasUpdate = false;
             for (SyndEntry entry : feed.getEntries()) {
