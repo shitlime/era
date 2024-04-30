@@ -15,16 +15,20 @@ import com.shitlime.era.pojo.entry.RssSource;
 import com.shitlime.era.pojo.entry.RssSubscription;
 import com.shitlime.era.utils.TableUtils;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLConnection;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.StringJoiner;
 
+@Slf4j
 @Service
 public class RssManageService {
     @Autowired
@@ -41,7 +45,7 @@ public class RssManageService {
      * @return
      */
     @Transactional
-    @SneakyThrows(value = {IOException.class, FeedException.class})
+    @SneakyThrows(value = {IOException.class, FeedException.class, URISyntaxException.class})
     public List<ArrayMsg> addRss(RssDTO rss) {
         checkTableExist();
 
@@ -60,7 +64,10 @@ public class RssManageService {
         RssSource rssSource = rssSourceMapper.selectByUrl(rss.getUrl());
         if (rssSource == null) {
             // 其他用户对象未订阅过此url
-            SyndFeed feed = new SyndFeedInput().build(new XmlReader(new URL(rss.getUrl())));
+            URLConnection connection = new URI(rss.getUrl()).toURL().openConnection();
+            connection.setConnectTimeout(20 * 1000);
+            connection.setReadTimeout(20 * 1000);
+            SyndFeed feed = new SyndFeedInput().build(new XmlReader(connection.getInputStream()));
             LocalDateTime now = LocalDateTime.now();
             rssSource = new RssSource();
             rssSource.setUrl(rss.getUrl());
@@ -151,7 +158,7 @@ public class RssManageService {
      * @return
      */
     @Transactional
-    @SneakyThrows(value = {IOException.class, FeedException.class})
+    @SneakyThrows(value = {IOException.class, FeedException.class, URISyntaxException.class})
     public List<ArrayMsg> enableRss(Long groupId, Long userId, Integer index) {
         checkTableExist();
 
@@ -161,8 +168,10 @@ public class RssManageService {
             RssSubscription rssSubscription = rssList.get(index - 1);
             RssSource rssSource = rssSourceMapper
                     .selectById(rssSubscription.getSourceId());
-            SyndFeed feed = new SyndFeedInput().build(
-                    new XmlReader(new URL(rssSource.getUrl())));
+            URLConnection connection = new URI(rssSource.getUrl()).toURL().openConnection();
+            connection.setConnectTimeout(20 * 1000);
+            connection.setReadTimeout(20 * 1000);
+            SyndFeed feed = new SyndFeedInput().build(new XmlReader(connection.getInputStream()));
             String feedString = JSON.toJSONString(feed.getEntries().stream()
                     .map(SyndEntry::getLink).toList());
             rssSource.setLatestFeed(feedString);
@@ -204,9 +213,11 @@ public class RssManageService {
 
     private void checkTableExist() {
         if (!tableUtils.isExist(RssSubscriptionMapper.tableName)) {
+            log.debug("未找到数据库表{}，尝试创建", RssSubscriptionMapper.tableName);
             rssSubscriptionMapper.createTable();
         }
         if (!tableUtils.isExist(RssSourceMapper.tableName)) {
+            log.debug("未找到数据库表{}，尝试创建", RssSourceMapper.tableName);
             rssSourceMapper.createTable();
         }
     }

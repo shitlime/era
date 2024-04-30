@@ -50,32 +50,38 @@ public class RssManagePlugin extends SessionPlugin {
         if (hasSession(event, REMOVE_SESSION_TAG)) {
             // 会话：删除rss
             if (event.getMessage().matches("\\d+")) {
+                log.info("删除rss");
                 List<ArrayMsg> msg = rssManageService.removeRss(
                         event.getGroupId(), event.getSender().getUserId(),
                         Integer.parseInt(event.getMessage()));
                 bot.sendMsg(event, msg, true);
             } else if ("|ok".equals(event.getMessage())) {
+                log.info("关闭删除rss订阅对话");
                 closeSession(event, REMOVE_SESSION_TAG);
             }
             return MESSAGE_BLOCK;
         } else if (hasSession(event, ENABLE_SESSION_TAG)) {
             // 会话：启用rss
             if (event.getMessage().matches("\\d+")) {
+                log.info("启用rss");
                 List<ArrayMsg> msg = rssManageService.enableRss(
                         event.getGroupId(), event.getSender().getUserId(),
                         Integer.parseInt(event.getMessage()));
                 bot.sendMsg(event, msg, true);
             } else if ("|ok".equals(event.getMessage())) {
+                log.info("关闭启用rss订阅对话");
                 closeSession(event, ENABLE_SESSION_TAG);
             }
         } else if (hasSession(event, DISABLE_SESSION_TAG)) {
             // 会话：禁用rss
             if (event.getMessage().matches("\\d+")) {
+                log.info("禁用rss");
                 List<ArrayMsg> msg = rssManageService.disableRss(
                         event.getGroupId(), event.getSender().getUserId(),
                         Integer.parseInt(event.getMessage()));
                 bot.sendMsg(event, msg, true);
             } else if ("|ok".equals(event.getMessage())) {
+                log.info("关闭禁用rss订阅对话");
                 closeSession(event, DISABLE_SESSION_TAG);
             }
         } else if (getHelpCmd().equals(event.getMessage())) {
@@ -131,6 +137,7 @@ public class RssManagePlugin extends SessionPlugin {
             return MESSAGE_BLOCK;
         } else if (getRemoveCmd().equals(event.getMessage())) {
             // 删除订阅
+            log.info("打开删除rss订阅对话");
             List<ArrayMsg> msg = rssManageService
                     .showRss(event.getGroupId(), event.getSender().getUserId());
             ArrayMsg arrayMsg = new ArrayMsg();
@@ -144,6 +151,7 @@ public class RssManagePlugin extends SessionPlugin {
             return MESSAGE_BLOCK;
         } else if (getEnableCmd().equals(event.getMessage())) {
             // 启用
+            log.info("打开启用rss订阅对话");
             List<ArrayMsg> msg = rssManageService
                     .showRss(event.getGroupId(), event.getSender().getUserId());
             ArrayMsg arrayMsg = new ArrayMsg();
@@ -156,6 +164,7 @@ public class RssManagePlugin extends SessionPlugin {
             openSession(event, ENABLE_SESSION_TAG);
         } else if (getDisableCmd().equals(event.getMessage())) {
             // 禁用
+            log.info("打开禁用rss订阅对话");
             List<ArrayMsg> msg = rssManageService
                     .showRss(event.getGroupId(), event.getSender().getUserId());
             ArrayMsg arrayMsg = new ArrayMsg();
