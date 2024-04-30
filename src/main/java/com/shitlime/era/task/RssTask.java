@@ -18,7 +18,6 @@ import com.shitlime.era.pojo.entry.RssSource;
 import com.shitlime.era.pojo.entry.RssSubscription;
 import com.shitlime.era.utils.TableUtils;
 import jakarta.annotation.Resource;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLConnection;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ public class RssTask {
     @Autowired
     private TableUtils tableUtils;
 
-    @Scheduled(cron = "0 1/12 * * * ?")
+    @Scheduled(cron = "0 */12 * * * ?")
     public void fetchRss() {
         if (!tableUtils.isExist(RssSubscriptionMapper.tableName)
                 || !tableUtils.isExist(RssSourceMapper.tableName)
@@ -69,9 +70,12 @@ public class RssTask {
             String url = rssSource.getUrl();
             SyndFeed feed;
             try {
-                feed = new SyndFeedInput().build(new XmlReader(new URL(url)));
-            } catch (FeedException | IOException e) {
-                log.warn(e.toString());
+                URLConnection connection = new URI(url).toURL().openConnection();
+                connection.setConnectTimeout(20 * 1000);
+                connection.setReadTimeout(20 * 1000);
+                feed = new SyndFeedInput().build(new XmlReader(connection.getInputStream()));
+            } catch (FeedException | IOException | URISyntaxException e) {
+                log.info(e.toString());
                 continue;
             }
 
