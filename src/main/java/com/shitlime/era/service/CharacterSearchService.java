@@ -27,10 +27,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.*;
 
 /**
  * 字符查询业务逻辑
@@ -72,7 +69,9 @@ public class CharacterSearchService {
         String rootPath = System.getProperty("user.dir");
         File datasetPath = new File(rootPath,
                 eraConfig.getResources().getPath().getDataset().getPath());
-        for (File file : Objects.requireNonNull(datasetPath.listFiles())) {
+        File[] files = Objects.requireNonNull(datasetPath.listFiles());
+        Arrays.sort(files, Comparator.comparing(File::getName));
+        for (File file : files) {
             if (!file.isDirectory()) {
                 continue;
             }
