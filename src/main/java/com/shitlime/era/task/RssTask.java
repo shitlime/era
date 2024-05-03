@@ -101,6 +101,9 @@ public class RssTask {
                         joiner.add(description);
                         joiner.add("");
                     }
+                    if (entry.getAuthor() != null) {
+                        joiner.add(String.format("(%s)", entry.getAuthor().trim()));
+                    }
                     joiner.add(String.format("RSS:〔%s〕", rssSource.getTitle()));
                     List<ArrayMsg> msg = ArrayMsgUtils.builder()
                             .text(joiner.toString()).buildList();
