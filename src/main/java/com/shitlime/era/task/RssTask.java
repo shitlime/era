@@ -59,7 +59,7 @@ public class RssTask {
         log.info("执行rss订阅更新任务。");
 
         List<Long> sourceIds = rssSubscriptionMapper.selectAllSourceId();
-        if (sourceIds==null || sourceIds.isEmpty()) {
+        if (sourceIds == null || sourceIds.isEmpty()) {
             log.info("没有任何启用的rss订阅。");
             return;
         }
@@ -86,32 +86,7 @@ public class RssTask {
                     hasUpdate = true;
 
                     // 构建消息
-                    StringJoiner joiner = new StringJoiner("\n");
-                    if (entry.getTitle() != null) {
-                        joiner.add(String.format("%s", entry.getTitle()));
-                    }
-                    if (entry.getDescription() != null &&
-                        !entry.getTitle().equals(entry.getDescription().getValue())
-                    ) {
-                        String description = entry.getDescription().getValue().trim();
-                        if ("text/html".equals(entry.getDescription().getType())) {
-                            description = Jsoup.parse(description).text();
-                        }
-                        joiner.add("");
-                        joiner.add(description);
-                        joiner.add("");
-                    }
-                    if (entry.getAuthor() != null) {
-                        joiner.add(String.format("(%s)", entry.getAuthor().trim()));
-                    }
-                    joiner.add(String.format("RSS:〔%s〕", rssSource.getTitle()));
-                    List<ArrayMsg> msg = ArrayMsgUtils.builder()
-                            .text(joiner.toString()).buildList();
-
-                    List<String> msgList = new ArrayList<>();
-                    msgList.add(ShiroUtils.arrayMsgToCode(msg));
-                    msgList.add(entry.getLink());
-                    List<Map<String, Object>> fwmsg = ShiroUtils.generateForwardMsg(msgList);
+                    List<Map<String, Object>> fwmsg = buildRssMessage(rssSource, entry);
 
                     // 给所有订阅者发送消息
                     List<RssSubscription> rssSubscriptions = rssSubscriptionMapper
@@ -137,5 +112,36 @@ public class RssTask {
             }
         }
         log.info("rss订阅更新任务执行完毕。");
+    }
+
+    private static List<Map<String, Object>>
+    buildRssMessage(RssSource rssSource, SyndEntry entry) {
+        StringJoiner joiner = new StringJoiner("\n");
+        if (entry.getTitle() != null) {
+            joiner.add(String.format("%s", entry.getTitle()));
+        }
+        if (entry.getDescription() != null &&
+                !entry.getTitle().equals(entry.getDescription().getValue())
+        ) {
+            String description = entry.getDescription().getValue().trim();
+            if ("text/html".equals(entry.getDescription().getType())) {
+                description = Jsoup.parse(description).text();
+            }
+            joiner.add("");
+            joiner.add(description);
+            joiner.add("");
+        }
+        if (entry.getAuthor() != null) {
+            joiner.add(String.format("(%s)", entry.getAuthor().trim()));
+        }
+        joiner.add(String.format("RSS:〔%s〕", rssSource.getTitle()));
+        List<ArrayMsg> msg = ArrayMsgUtils.builder()
+                .text(joiner.toString()).buildList();
+
+        List<String> msgList = new ArrayList<>();
+        msgList.add(ShiroUtils.arrayMsgToCode(msg));
+        msgList.add(entry.getLink());
+        List<Map<String, Object>> fwmsg = ShiroUtils.generateForwardMsg(msgList);
+        return fwmsg;
     }
 }
