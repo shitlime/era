@@ -117,11 +117,11 @@ public class RssTask {
     private static List<Map<String, Object>>
     buildRssMessage(RssSource rssSource, SyndEntry entry) {
         StringJoiner joiner = new StringJoiner("\n");
-        if (entry.getTitle() != null) {
+        if (entry.getTitle() != null && !entry.getTitle().isBlank()) {
             joiner.add(String.format("%s", entry.getTitle()));
         }
-        if (entry.getDescription() != null &&
-                !entry.getTitle().equals(entry.getDescription().getValue())
+        if (entry.getDescription() != null && !entry.getDescription().getValue().isBlank()
+                && !entry.getTitle().equals(entry.getDescription().getValue())
         ) {
             String description = entry.getDescription().getValue().trim();
             if ("text/html".equals(entry.getDescription().getType())) {
@@ -131,7 +131,7 @@ public class RssTask {
             joiner.add(description);
             joiner.add("");
         }
-        if (entry.getAuthor() != null) {
+        if (entry.getAuthor() != null && !entry.getAuthor().isBlank()) {
             joiner.add(String.format("(%s)", entry.getAuthor().trim()));
         }
         joiner.add(String.format("RSS:〔%s〕", rssSource.getTitle()));
