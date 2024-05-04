@@ -1,26 +1,20 @@
 package com.shitlime.era.service;
 
-import com.mikuac.shiro.common.utils.ArrayMsgUtils;
-import com.mikuac.shiro.model.ArrayMsg;
+import com.mikuac.shiro.dto.action.response.GetStatusResp;
 import org.springframework.stereotype.Service;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.time.*;
 import java.util.StringJoiner;
 
 @Service
 public class StateService {
-    public List<ArrayMsg> getState() {
+    public String getEraState() {
         StringJoiner joiner = new StringJoiner("\n");
-        // 时间
-        joiner.add(LocalDateTime.now()
-                .format(DateTimeFormatter.ofPattern("yyyy年MM月dd日HH时mm分ss")));
+        joiner.add("----- 大脑 -----");
 
         // 获取操作系统相关信息
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
@@ -46,6 +40,26 @@ public class StateService {
         long used2 = memoryBean.getNonHeapMemoryUsage().getUsed();
         joiner.add(String.format("内存使用: %.2fMB", (used+used2)/1024.0/1024.0));
 
-        return ArrayMsgUtils.builder().text(joiner.toString()).buildList();
+        joiner.add("---------------");
+        return joiner.toString();
+    }
+
+    public String getOnebotStatus(GetStatusResp status) {
+        StringJoiner joiner = new StringJoiner("\n");
+        joiner.add("----- 身体 -----");
+
+        // 发送/接收消息次数
+        joiner.add(String.format("发送：%s 接收：%s",
+                status.getStat().getMessageSent(), status.getStat().getMessageReceived()));
+        // 发/收包
+        joiner.add(String.format("发包：%s 收包：%s",
+                status.getStat().getPacketSent(), status.getStat().getPacketReceived()));
+        // 连接断开次数
+        joiner.add(String.format("断开：%s次", status.getStat().getDisconnectTimes()));
+        // 丢包数
+        joiner.add(String.format("丢包：%s", status.getStat().getPacketLost()));
+
+        joiner.add("---------------");
+        return joiner.toString();
     }
 }
