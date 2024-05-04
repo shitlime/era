@@ -3,6 +3,8 @@ package com.shitlime.era.plugins;
 import com.mikuac.shiro.annotation.common.Shiro;
 import com.mikuac.shiro.common.utils.ArrayMsgUtils;
 import com.mikuac.shiro.core.Bot;
+import com.mikuac.shiro.dto.action.common.ActionData;
+import com.mikuac.shiro.dto.action.common.MsgId;
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent;
 import com.mikuac.shiro.enums.MsgTypeEnum;
 import com.mikuac.shiro.model.ArrayMsg;
@@ -15,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.StringJoiner;
@@ -28,6 +31,7 @@ public class RssManagePlugin extends SessionPlugin {
     private static final String REMOVE_SESSION_TAG = "remove";
     private static final String ENABLE_SESSION_TAG = "enable";
     private static final String DISABLE_SESSION_TAG = "disable";
+    private static final List<MsgId> recallList = new ArrayList<>();
 
     @Autowired
     private EraConfig eraConfig;
@@ -54,9 +58,11 @@ public class RssManagePlugin extends SessionPlugin {
                 List<ArrayMsg> msg = rssManageService.removeRss(
                         event.getGroupId(), event.getSender().getUserId(),
                         Integer.parseInt(event.getMessage()));
-                bot.sendMsg(event, msg, true);
+                ActionData<MsgId> actionData = bot.sendMsg(event, msg, true);
+                recallList.add(actionData.getData());
             } else if ("|ok".equals(event.getMessage())) {
                 log.info("关闭删除rss订阅对话");
+                recallList.forEach(msgId -> bot.deleteMsg(msgId.getMessageId()));
                 closeSession(event, REMOVE_SESSION_TAG);
             }
             return MESSAGE_BLOCK;
@@ -67,9 +73,11 @@ public class RssManagePlugin extends SessionPlugin {
                 List<ArrayMsg> msg = rssManageService.enableRss(
                         event.getGroupId(), event.getSender().getUserId(),
                         Integer.parseInt(event.getMessage()));
-                bot.sendMsg(event, msg, true);
+                ActionData<MsgId> actionData = bot.sendMsg(event, msg, true);
+                recallList.add(actionData.getData());
             } else if ("|ok".equals(event.getMessage())) {
                 log.info("关闭启用rss订阅对话");
+                recallList.forEach(msgId -> bot.deleteMsg(msgId.getMessageId()));
                 closeSession(event, ENABLE_SESSION_TAG);
             }
         } else if (hasSession(event, DISABLE_SESSION_TAG)) {
@@ -79,9 +87,11 @@ public class RssManagePlugin extends SessionPlugin {
                 List<ArrayMsg> msg = rssManageService.disableRss(
                         event.getGroupId(), event.getSender().getUserId(),
                         Integer.parseInt(event.getMessage()));
-                bot.sendMsg(event, msg, true);
+                ActionData<MsgId> actionData = bot.sendMsg(event, msg, true);
+                recallList.add(actionData.getData());
             } else if ("|ok".equals(event.getMessage())) {
                 log.info("关闭禁用rss订阅对话");
+                recallList.forEach(msgId -> bot.deleteMsg(msgId.getMessageId()));
                 closeSession(event, DISABLE_SESSION_TAG);
             }
         } else if (getHelpCmd().equals(event.getMessage())) {
@@ -146,7 +156,8 @@ public class RssManagePlugin extends SessionPlugin {
             map.put("text", "\n> 输入要删除的编号");
             arrayMsg.setData(map);
             msg.add(arrayMsg);
-            bot.sendMsg(event, msg, true);
+            ActionData<MsgId> actionData = bot.sendMsg(event, msg, true);
+            recallList.add(actionData.getData());
             openSession(event, REMOVE_SESSION_TAG);
             return MESSAGE_BLOCK;
         } else if (getEnableCmd().equals(event.getMessage())) {
@@ -160,7 +171,8 @@ public class RssManagePlugin extends SessionPlugin {
             map.put("text", "\n> 输入要启用的编号");
             arrayMsg.setData(map);
             msg.add(arrayMsg);
-            bot.sendMsg(event, msg, true);
+            ActionData<MsgId> actionData = bot.sendMsg(event, msg, true);
+            recallList.add(actionData.getData());
             openSession(event, ENABLE_SESSION_TAG);
         } else if (getDisableCmd().equals(event.getMessage())) {
             // 禁用
@@ -173,7 +185,8 @@ public class RssManagePlugin extends SessionPlugin {
             map.put("text", "\n> 输入要禁用的编号");
             arrayMsg.setData(map);
             msg.add(arrayMsg);
-            bot.sendMsg(event, msg, true);
+            ActionData<MsgId> actionData = bot.sendMsg(event, msg, true);
+            recallList.add(actionData.getData());
             openSession(event, DISABLE_SESSION_TAG);
         }
         return MESSAGE_IGNORE;
