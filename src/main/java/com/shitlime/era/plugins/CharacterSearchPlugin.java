@@ -67,7 +67,7 @@ public class CharacterSearchPlugin {
         joiner.add("?list");
 
         String msg = joiner.toString();
-        bot.sendMsg(event, ArrayMsgUtils.builder().text(msg).buildList(), true);
+        bot.sendMsg(event, ArrayMsgUtils.builder().text(msg).build(), true);
     }
 
     /**
@@ -104,7 +104,7 @@ public class CharacterSearchPlugin {
 
         if (msg==null) {
             bot.sendMsg(event, ArrayMsgUtils.builder()
-                    .text("目前没有任何数据集").buildList(), true);
+                    .text("目前没有任何数据集").build(), true);
             return;
         }
         List<Map<String, Object>> fwmsg = ShiroUtils.generateForwardMsg(msg);
@@ -153,7 +153,7 @@ public class CharacterSearchPlugin {
                 ArrayMsgUtils.builder().text(
                         String.format("已经清除%s设置的所有快捷查询",
                         event.getSender().getNickname()))
-                        .buildList(), true);
+                        .build(), true);
     }
 
     /**

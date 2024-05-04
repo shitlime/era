@@ -57,7 +57,7 @@ public class RssManageService {
             List<RssSource> rssSources = rssSourceMapper.selectByIds(ids);
 
             if (rssSources.stream().anyMatch(r -> rss.getUrl().equals(r.getUrl()))) {
-                return ArrayMsgUtils.builder().text("订阅失败，该URL已经订阅过。").buildList();
+                return ArrayMsgUtils.builder().text("订阅失败，该URL已经订阅过。").build();
             }
         }
 
@@ -92,7 +92,7 @@ public class RssManageService {
         rssSubscriptionMapper.insert(rssSubscription);
 
         return ArrayMsgUtils.builder()
-                .text(String.format("〔%s〕订阅成功。", rssSource.getTitle())).buildList();
+                .text(String.format("〔%s〕订阅成功。", rssSource.getTitle())).build();
     }
 
     /**
@@ -107,7 +107,7 @@ public class RssManageService {
         List<RssSubscription> rssSubscriptions = rssSubscriptionMapper.show(groupId, userId);
 
         if (rssSubscriptions == null || rssSubscriptions.isEmpty()) {
-            return ArrayMsgUtils.builder().text("暂无订阅").buildList();
+            return ArrayMsgUtils.builder().text("暂无订阅").build();
         }
 
         StringJoiner joiner = new StringJoiner("\n");
@@ -117,7 +117,7 @@ public class RssManageService {
             joiner.add(String.format("%s.[%s]%s",
                     i + 1, rss.getEnable()? "已启用":"已禁用", rssSource.getTitle()));
         }
-        return ArrayMsgUtils.builder().text(joiner.toString()).buildList();
+        return ArrayMsgUtils.builder().text(joiner.toString()).build();
     }
 
     /**
@@ -145,9 +145,9 @@ public class RssManageService {
             return ArrayMsgUtils.builder()
                     .text(String.format("成功删除rss〔%s〕\n", rssSource.getTitle()))
                     .text("退出删除模式请发送“|ok”")
-                    .buildList();
+                    .build();
         }
-        return ArrayMsgUtils.builder().text("请检查编号是否错误").buildList();
+        return ArrayMsgUtils.builder().text("请检查编号是否错误").build();
     }
 
     /**
@@ -181,9 +181,9 @@ public class RssManageService {
             return ArrayMsgUtils.builder()
                     .text(String.format("成功启用rss〔%s〕\n", rssSource.getTitle()))
                     .text("退出启用模式请发送“|ok”")
-                    .buildList();
+                    .build();
         }
-        return ArrayMsgUtils.builder().text("请检查编号是否错误").buildList();
+        return ArrayMsgUtils.builder().text("请检查编号是否错误").build();
     }
 
     /**
@@ -206,9 +206,9 @@ public class RssManageService {
             return ArrayMsgUtils.builder()
                     .text(String.format("成功禁用rss〔%s〕\n", rssSource.getTitle()))
                     .text("退出禁用模式请发送“|ok”")
-                    .buildList();
+                    .build();
         }
-        return ArrayMsgUtils.builder().text("请检查编号是否错误").buildList();
+        return ArrayMsgUtils.builder().text("请检查编号是否错误").build();
     }
 
     private void checkTableExist() {

@@ -28,7 +28,7 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.3")
 	// bot框架
-	implementation("com.mikuac:shiro:2.2.2")
+	implementation("com.mikuac:shiro:2.2.3")
 	// sqlite数据库
 	implementation("org.xerial:sqlite-jdbc:3.45.3.0")
 	// yaml

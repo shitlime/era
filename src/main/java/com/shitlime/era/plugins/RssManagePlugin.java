@@ -107,7 +107,7 @@ public class RssManagePlugin extends SessionPlugin {
             joiner.add("※群组内仅群主/管理有权限");
 
             bot.sendMsg(event, ArrayMsgUtils.builder()
-                    .text(joiner.toString()).buildList(), true);
+                    .text(joiner.toString()).build(), true);
             return MESSAGE_BLOCK;
         } else if (event.getMessage().matches(getAddCmd())) {
             // 订阅

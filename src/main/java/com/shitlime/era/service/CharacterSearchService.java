@@ -116,7 +116,7 @@ public class CharacterSearchService {
                 }
             }
         }
-        return ArrayMsgUtils.builder().text("未找到对应的数据集").buildList();
+        return ArrayMsgUtils.builder().text("未找到对应的数据集").build();
     }
 
     /**
@@ -157,7 +157,7 @@ public class CharacterSearchService {
      */
     public List<ArrayMsg> setQuickSearch(QuickSearch quickSearch) {
         if (!consistDatasetList(quickSearch.getDatasetId())) {
-            return ArrayMsgUtils.builder().text("未找到对应的数据集").buildList();
+            return ArrayMsgUtils.builder().text("未找到对应的数据集").build();
         }
 
         if (tableUtils.isExist(QuickSearchMapper.tableName)) {
@@ -181,7 +181,7 @@ public class CharacterSearchService {
         return ArrayMsgUtils.builder().text(
                         String.format("快键查询%s已设置为『%s』", quickSearch.getPrefix(),
                                 getDatasetNameById(quickSearch.getDatasetId())))
-                .buildList();
+                .build();
     }
 
     /**
@@ -214,7 +214,7 @@ public class CharacterSearchService {
         return ArrayMsgUtils.builder()
                 .text(String.format("未设置快捷查询，可通过“%s　set　<数据集id>”设置",
                         quickSearch.getPrefix()))
-                .buildList();
+                .build();
     }
 
     /**
@@ -254,7 +254,7 @@ public class CharacterSearchService {
         } else {
             joiner.add("= End =");
         }
-        return ArrayMsgUtils.builder().text(joiner.toString()).buildList();
+        return ArrayMsgUtils.builder().text(joiner.toString()).build();
     }
 
     /**
@@ -291,7 +291,7 @@ public class CharacterSearchService {
         return ArrayMsgUtils.builder()
                 .text(String.format("[%s]\n%s",
                         dataset.getDatasetConfig().getName(), joiner))
-                .buildList();
+                .build();
     }
 
     /**
@@ -312,7 +312,7 @@ public class CharacterSearchService {
             result.forEach(pic ->
                     msgUtils.img("base64://" + FileUtils.fileToBase64(pic)));
         }
-        return msgUtils.buildList();
+        return msgUtils.build();
     }
 
     /**
@@ -332,7 +332,7 @@ public class CharacterSearchService {
         return ArrayMsgUtils.builder()
                 .text(String.format("[%s]\n%s",
                         dataset.getDatasetConfig().getName(), joiner))
-                .buildList();
+                .build();
     }
 
     /**

@@ -136,7 +136,7 @@ public class RssTask {
         }
         joiner.add(String.format("RSS:〔%s〕", rssSource.getTitle()));
         List<ArrayMsg> msg = ArrayMsgUtils.builder()
-                .text(joiner.toString()).buildList();
+                .text(joiner.toString()).build();
 
         List<String> msgList = new ArrayList<>();
         msgList.add(ShiroUtils.arrayMsgToCode(msg));
