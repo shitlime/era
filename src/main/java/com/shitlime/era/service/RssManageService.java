@@ -104,6 +104,9 @@ public class RssManageService {
     public List<ArrayMsg> showRss(Long groupId, Long userId) {
         checkTableExist();
 
+        if (groupId != null) {
+            userId = null;
+        }
         List<RssSubscription> rssSubscriptions = rssSubscriptionMapper.show(groupId, userId);
 
         if (rssSubscriptions == null || rssSubscriptions.isEmpty()) {
@@ -131,6 +134,9 @@ public class RssManageService {
     public List<ArrayMsg> removeRss(Long groupId, Long userId, Integer index) {
         checkTableExist();
 
+        if (groupId != null) {
+            userId = null;
+        }
         List<RssSubscription> rssList = rssSubscriptionMapper.show(groupId, userId);
 
         if ( index != null && index > 0 && index <= rssList.size()) {
@@ -162,6 +168,9 @@ public class RssManageService {
     public List<ArrayMsg> enableRss(Long groupId, Long userId, Integer index) {
         checkTableExist();
 
+        if (groupId != null) {
+            userId = null;
+        }
         List<RssSubscription> rssList = rssSubscriptionMapper.show(groupId, userId);
 
         if ( index != null && index > 0 && index <= rssList.size()) {
@@ -197,6 +206,9 @@ public class RssManageService {
     public List<ArrayMsg> disableRss(Long groupId, Long userId, Integer index) {
         checkTableExist();
 
+        if (groupId != null) {
+            userId = null;
+        }
         List<RssSubscription> rssList = rssSubscriptionMapper.show(groupId, userId);
 
         if ( index != null && index > 0 && index <= rssList.size()) {
