@@ -99,6 +99,6 @@ public class TextToImagePlugin extends BotPlugin {
     private String getCmd() {
         String perfix = eraConfig.getBot().getCmd();
         perfix = perfix.matches("(?:\\||\\\\)")? "\\"+perfix : perfix;
-        return String.format("%s(豆腐|tofu|渲染)(.+)", perfix);
+        return String.format("%s(?:豆腐|tofu|渲染)(.+)", perfix);
     }
 }
