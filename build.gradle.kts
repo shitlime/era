@@ -37,6 +37,8 @@ dependencies {
 	implementation("com.rometools:rome:2.1.0")
 	// jsoup
 	implementation("org.jsoup:jsoup:1.17.2")
+	// playwright
+	implementation("com.microsoft.playwright:playwright:1.41.2")
 }
 
 tasks.withType<Test> {

@@ -17,6 +17,7 @@ shiro:
   plugin-list:
     - com.shitlime.era.plugins.StatePlugin
     - com.shitlime.era.plugins.RssManagePlugin
+    - com.shitlime.era.plugins.TextToImagePlugin
   # 限速器（令牌桶算法）
   limiter:
     # 是否启用限速器
@@ -47,6 +48,8 @@ era:
         path: resources/static/dataset
         table-name-prefix: dataset_
       sqlite: resources/static/sqlite
+      fonts: resources/static/fonts
+      temp: resources/tmp
   bot:
     name: era
     id: ${era.bot.id}
