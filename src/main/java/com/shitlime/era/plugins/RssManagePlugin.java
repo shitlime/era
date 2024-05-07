@@ -123,7 +123,9 @@ public class RssManagePlugin extends SessionPlugin {
             // 订阅
             Pattern pattern = Pattern.compile(getAddCmd());
             Matcher matcher = pattern.matcher(event.getMessage());
-            matcher.find();
+            if (!matcher.find()) {
+                return MESSAGE_IGNORE;
+            }
             String url = matcher.group(1);
             RssDTO rss = new RssDTO();
             rss.setUrl(url);

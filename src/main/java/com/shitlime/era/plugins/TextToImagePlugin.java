@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,6 +25,8 @@ import java.util.regex.Pattern;
 @Shiro
 @Component
 public class TextToImagePlugin extends BotPlugin {
+    private static final List<String> keywords = List.of("豆腐", "tofu", "渲染", "豆腐块");
+
     @Autowired
     EraConfig eraConfig;
     @Autowired
@@ -40,15 +44,18 @@ public class TextToImagePlugin extends BotPlugin {
                 }
             });
             Matcher matcher = pattern.matcher(builder.toString());
-            matcher.find();
-            String tofu = matcher.group(1);
-            sendImage(bot, event, tofu);
+            if (matcher.find()) {
+                String tofu = matcher.group(1);
+                sendImage(bot, event, tofu);
+            }
         } else if (
             event.getArrayMsg().stream().anyMatch(arrayMsg ->
             MsgTypeEnum.reply.equals(arrayMsg.getType()))
             && event.getArrayMsg().stream().anyMatch(arrayMsg ->
             (MsgTypeEnum.text.equals(arrayMsg.getType())
-                    && "|豆腐".equals(arrayMsg.getData().get("text"))))
+                    && arrayMsg.getData().get("text") != null
+                    && !arrayMsg.getData().get("text").isEmpty()
+                    && !arrayMsg.getData().get("text").matches(getReplyKeyword())))
         ) {
             // 回复式渲染
             String replyMsg = null;
@@ -99,6 +106,18 @@ public class TextToImagePlugin extends BotPlugin {
     private String getCmd() {
         String perfix = eraConfig.getBot().getCmd();
         perfix = perfix.matches("(?:\\||\\\\)")? "\\"+perfix : perfix;
-        return String.format("%s(?:豆腐|tofu|渲染)(.+)", perfix);
+        StringJoiner joiner = new StringJoiner("|", ".+(?:", ")");
+        keywords.forEach(joiner::add);
+        return String.format("%s%s(.+)", perfix, joiner);
+    }
+
+    /**
+     * 回复关键词
+     * @return
+     */
+    private String getReplyKeyword() {
+        StringJoiner joiner = new StringJoiner("|", ".+(?:", ")");
+        keywords.forEach(joiner::add);
+        return joiner.toString();
     }
 }
