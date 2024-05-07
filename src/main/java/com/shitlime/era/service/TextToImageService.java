@@ -88,7 +88,7 @@ public class TextToImageService {
             playwrightHandle.navigate(this.page, pageFile);
         } else {
             this.page.evaluate(String.format(
-                    "document.write(\"%s\");",
+                    "document.open();document.write(\"%s\");document.close();",
                     buildPage(pageSettingDTO).replace("\"", "\\\"")));
         }
     }
