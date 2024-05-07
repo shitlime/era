@@ -22,6 +22,8 @@ import java.util.UUID;
 
 @Service
 public class TextToImageService {
+    private Page page;
+
     @Autowired
     PlaywrightHandle playwrightHandle;
     @Autowired
@@ -34,7 +36,8 @@ public class TextToImageService {
      */
     public String longToImageBase64(String text) {
         PageSettingDTO pageSettingDTO = getPageContentDTO();
-        return screenshot(text, pageSettingDTO);
+        pageSettingDTO.setContent(text);
+        return screenshot(pageSettingDTO);
     }
 
     /**
@@ -50,35 +53,44 @@ public class TextToImageService {
         pageSettingDTO.setPaddingBottom(0);
         pageSettingDTO.setPaddingLeft(0);
         pageSettingDTO.setPaddingRight(0);
-        return screenshot(text, pageSettingDTO);
+        pageSettingDTO.setContent(text);
+        return screenshot(pageSettingDTO);
     }
 
     /**
-     * 在网页中截图
-     * @param text
+     * 截图。
      * @param pageSettingDTO
-     * @return
-     * @throws IOException
+     * @return 返回base64编码。
+     */
+    private String screenshot(PageSettingDTO pageSettingDTO) {
+        openPage(pageSettingDTO);
+        ElementHandle show = this.page.locator("#show").elementHandle();
+        return Base64.getEncoder().encodeToString(show.screenshot());
+    }
+
+    /**
+     * 根据 pageSettingDTO 打开并配置好页面
+     * @param pageSettingDTO
      */
     @SneakyThrows(IOException.class)
-    private String screenshot(String text, PageSettingDTO pageSettingDTO) {
-        pageSettingDTO.setContent(text);
-
-        String pageHtml = buildPage(pageSettingDTO);
-        File pageFile = new File(eraConfig.getResources().getPath().getTemp(),
-                UUID.randomUUID().toString() + ".html");
-        Files.createDirectories(pageFile.getParentFile().toPath());
-        Files.createFile(pageFile.toPath());
-        FileWriter writer = new FileWriter(pageFile);
-        writer.write(pageHtml);
-        writer.close();
-        Page page = playwrightHandle.newPage();
-        playwrightHandle.navigate(page, pageFile);
-        ElementHandle show = page.locator("#show").elementHandle();
-        String base64 = Base64.getEncoder().encodeToString(show.screenshot());
-        page.close();
-        pageFile.delete();
-        return base64;
+    private void openPage(PageSettingDTO pageSettingDTO) {
+        if (this.page == null) {
+            String pageHtml = buildPage(pageSettingDTO);
+            File pageFile = new File(eraConfig.getResources().getPath().getTemp(),
+                    UUID.randomUUID() + ".html");
+            Files.createDirectories(pageFile.getParentFile().toPath());
+            Files.createFile(pageFile.toPath());
+            FileWriter writer = new FileWriter(pageFile);
+            writer.write(pageHtml);
+            writer.close();
+            pageFile.deleteOnExit();
+            this.page = playwrightHandle.newPage();
+            playwrightHandle.navigate(this.page, pageFile);
+        } else {
+            this.page.evaluate(String.format(
+                    "document.write(\"%s\");",
+                    buildPage(pageSettingDTO).replace("\"", "\\\"")));
+        }
     }
 
     /**
@@ -158,8 +170,8 @@ public class TextToImageService {
         builder.append("</head>");
 
         builder.append("<body>");
-        builder.append("<div class=\"show\" id=\"show\">");
-        builder.append("<span class=\"content\" id=\"content\">");
+        builder.append("<div id=\"show\">");
+        builder.append("<span id=\"content\">");
 
         String content = Entities.escape(page.getContent())
                 .replace("\n", "<br>");
