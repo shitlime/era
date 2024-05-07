@@ -106,7 +106,7 @@ public class TextToImagePlugin extends BotPlugin {
     private String getCmd() {
         String perfix = eraConfig.getBot().getCmd();
         perfix = perfix.matches("(?:\\||\\\\)")? "\\"+perfix : perfix;
-        StringJoiner joiner = new StringJoiner("|", ".+(?:", ")");
+        StringJoiner joiner = new StringJoiner("|", "(?:", ")");
         keywords.forEach(joiner::add);
         return String.format("%s%s(.+)", perfix, joiner);
     }
