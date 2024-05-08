@@ -3,13 +3,13 @@ package com.shitlime.era.plugins;
 import com.mikuac.shiro.core.BotPlugin;
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class SessionPlugin extends BotPlugin {
-    private List<Map<String, Map<Long, Long>>> sessionList = new ArrayList<>();
+    private List<Map<String, Map<Long, Long>>> sessionList = new CopyOnWriteArrayList<> ();
 
     /**
      * 判断当前插件是否有会话
