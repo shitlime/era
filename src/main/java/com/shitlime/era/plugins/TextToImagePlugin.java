@@ -55,7 +55,7 @@ public class TextToImagePlugin extends BotPlugin {
             (MsgTypeEnum.text.equals(arrayMsg.getType())
                     && arrayMsg.getData().get("text") != null
                     && !arrayMsg.getData().get("text").isEmpty()
-                    && !arrayMsg.getData().get("text").matches(getReplyKeyword())))
+                    && arrayMsg.getData().get("text").matches(getReplyKeyword())))
         ) {
             // 回复式渲染
             String replyMsg = null;
@@ -106,7 +106,7 @@ public class TextToImagePlugin extends BotPlugin {
     private String getCmd() {
         String perfix = eraConfig.getBot().getCmd();
         perfix = perfix.matches("(?:\\||\\\\)")? "\\"+perfix : perfix;
-        StringJoiner joiner = new StringJoiner("|", ".+(?:", ")");
+        StringJoiner joiner = new StringJoiner("|", "(?:", ")");
         keywords.forEach(joiner::add);
         return String.format("%s%s(.+)", perfix, joiner);
     }
@@ -116,7 +116,7 @@ public class TextToImagePlugin extends BotPlugin {
      * @return
      */
     private String getReplyKeyword() {
-        StringJoiner joiner = new StringJoiner("|", ".+(?:", ")");
+        StringJoiner joiner = new StringJoiner("|", ".*(?:", ")");
         keywords.forEach(joiner::add);
         return joiner.toString();
     }
