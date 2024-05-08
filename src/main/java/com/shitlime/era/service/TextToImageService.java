@@ -37,7 +37,8 @@ public class TextToImageService {
     public String longToImageBase64(String text) {
         PageSettingDTO pageSettingDTO = getPageContentDTO();
         pageSettingDTO.setContent(text);
-        return screenshot(pageSettingDTO);
+        String html = buildPage(pageSettingDTO);
+        return Base64.getEncoder().encodeToString(screenshot(html));
     }
 
     /**
@@ -54,34 +55,34 @@ public class TextToImageService {
         pageSettingDTO.setPaddingLeft(0);
         pageSettingDTO.setPaddingRight(0);
         pageSettingDTO.setContent(text);
-        return screenshot(pageSettingDTO);
+        String html = buildPage(pageSettingDTO);
+        return Base64.getEncoder().encodeToString(screenshot(html));
     }
 
     /**
-     * 截图。
-     * @param pageSettingDTO
-     * @return 返回base64编码。
+     * 截图
+     * @param html 页面的 HTML 代码
+     * @return
      */
-    private String screenshot(PageSettingDTO pageSettingDTO) {
-        openPage(pageSettingDTO);
+    private synchronized byte[] screenshot(String html) {
+        openPage(html);
         ElementHandle show = this.page.locator("#show").elementHandle();
-        return Base64.getEncoder().encodeToString(show.screenshot());
+        return show.screenshot();
     }
 
     /**
-     * 根据 pageSettingDTO 打开并配置好页面
-     * @param pageSettingDTO
+     * 根据 HTML 打开页面
+     * @param html 页面的 HTML 代码
      */
     @SneakyThrows(IOException.class)
-    private void openPage(PageSettingDTO pageSettingDTO) {
+    private void openPage(String html) {
         if (this.page == null) {
-            String pageHtml = buildPage(pageSettingDTO);
             File pageFile = new File(eraConfig.getResources().getPath().getTemp(),
                     UUID.randomUUID() + ".html");
             Files.createDirectories(pageFile.getParentFile().toPath());
             Files.createFile(pageFile.toPath());
             FileWriter writer = new FileWriter(pageFile);
-            writer.write(pageHtml);
+            writer.write(html);
             writer.close();
             pageFile.deleteOnExit();
             this.page = playwrightHandle.newPage();
@@ -89,7 +90,7 @@ public class TextToImageService {
         } else {
             this.page.evaluate(String.format(
                     "document.open();document.write(\"%s\");document.close();",
-                    buildPage(pageSettingDTO).replace("\"", "\\\"")));
+                    html.replace("\"", "\\\"")));
         }
     }
 
