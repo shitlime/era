@@ -166,6 +166,8 @@ public class TextToImageService {
         builder.append("display:flex;");
         builder.append("align-items:center;");
         builder.append("justify-content:center;");
+        builder.append("white-space:pre-wrap;");
+        builder.append("word-break:break-word;");
         builder.append("}");
         builder.append("</style>");
         builder.append("</head>");
