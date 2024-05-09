@@ -51,7 +51,7 @@ public class RssManagePlugin extends SessionPlugin {
             return MESSAGE_IGNORE;
         }
 
-        if (hasSession(event, REMOVE_SESSION_TAG)) {
+        if (hasSharedSession(event, REMOVE_SESSION_TAG)) {
             // 会话：删除rss
             if (event.getMessage().matches("\\d+")) {
                 log.info("删除rss");
@@ -63,10 +63,10 @@ public class RssManagePlugin extends SessionPlugin {
             } else if ("|ok".equals(event.getMessage())) {
                 log.info("关闭删除rss订阅对话");
                 recallList.forEach(msgId -> bot.deleteMsg(msgId.getMessageId()));
-                closeSession(event, REMOVE_SESSION_TAG);
+                closeSharedSession(event, REMOVE_SESSION_TAG);
             }
             return MESSAGE_BLOCK;
-        } else if (hasSession(event, ENABLE_SESSION_TAG)) {
+        } else if (hasSharedSession(event, ENABLE_SESSION_TAG)) {
             // 会话：启用rss
             if (event.getMessage().matches("\\d+")) {
                 log.info("启用rss");
@@ -78,9 +78,9 @@ public class RssManagePlugin extends SessionPlugin {
             } else if ("|ok".equals(event.getMessage())) {
                 log.info("关闭启用rss订阅对话");
                 recallList.forEach(msgId -> bot.deleteMsg(msgId.getMessageId()));
-                closeSession(event, ENABLE_SESSION_TAG);
+                closeSharedSession(event, ENABLE_SESSION_TAG);
             }
-        } else if (hasSession(event, DISABLE_SESSION_TAG)) {
+        } else if (hasSharedSession(event, DISABLE_SESSION_TAG)) {
             // 会话：禁用rss
             if (event.getMessage().matches("\\d+")) {
                 log.info("禁用rss");
@@ -92,7 +92,7 @@ public class RssManagePlugin extends SessionPlugin {
             } else if ("|ok".equals(event.getMessage())) {
                 log.info("关闭禁用rss订阅对话");
                 recallList.forEach(msgId -> bot.deleteMsg(msgId.getMessageId()));
-                closeSession(event, DISABLE_SESSION_TAG);
+                closeSharedSession(event, DISABLE_SESSION_TAG);
             }
         } else if (getHelpCmd().equals(event.getMessage())) {
             // 帮助
@@ -160,7 +160,8 @@ public class RssManagePlugin extends SessionPlugin {
             msg.add(arrayMsg);
             ActionData<MsgId> actionData = bot.sendMsg(event, msg, true);
             recallList.add(actionData.getData());
-            openSession(event, REMOVE_SESSION_TAG);
+            openSharedSession(event, REMOVE_SESSION_TAG, 110,
+                    () -> recallList.forEach(msgId -> bot.deleteMsg(msgId.getMessageId())));
             return MESSAGE_BLOCK;
         } else if (getEnableCmd().equals(event.getMessage())) {
             // 启用
@@ -175,7 +176,8 @@ public class RssManagePlugin extends SessionPlugin {
             msg.add(arrayMsg);
             ActionData<MsgId> actionData = bot.sendMsg(event, msg, true);
             recallList.add(actionData.getData());
-            openSession(event, ENABLE_SESSION_TAG);
+            openSharedSession(event, ENABLE_SESSION_TAG, 110,
+                    () -> recallList.forEach(msgId -> bot.deleteMsg(msgId.getMessageId())));
         } else if (getDisableCmd().equals(event.getMessage())) {
             // 禁用
             log.info("打开禁用rss订阅对话");
@@ -189,7 +191,8 @@ public class RssManagePlugin extends SessionPlugin {
             msg.add(arrayMsg);
             ActionData<MsgId> actionData = bot.sendMsg(event, msg, true);
             recallList.add(actionData.getData());
-            openSession(event, DISABLE_SESSION_TAG);
+            openSharedSession(event, DISABLE_SESSION_TAG, 110,
+                    () -> recallList.forEach(msgId -> bot.deleteMsg(msgId.getMessageId())));
         }
         return MESSAGE_IGNORE;
     }
