@@ -1,6 +1,7 @@
 package com.shitlime.era.task;
 
 import com.alibaba.fastjson2.JSON;
+import com.microsoft.playwright.Page;
 import com.mikuac.shiro.common.utils.ArrayMsgUtils;
 import com.mikuac.shiro.common.utils.ShiroUtils;
 import com.mikuac.shiro.core.Bot;
@@ -12,6 +13,7 @@ import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 import com.shitlime.era.config.EraConfig;
+import com.shitlime.era.handle.impl.PlaywrightHandle;
 import com.shitlime.era.mapper.RssSourceMapper;
 import com.shitlime.era.mapper.RssSubscriptionMapper;
 import com.shitlime.era.pojo.entry.RssSource;
@@ -29,14 +31,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLConnection;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
+import java.util.*;
 
 @Slf4j
 @Component
 public class RssTask {
+    private Page page;
+
     @Resource
     private BotContainer botContainer;
     @Autowired
@@ -47,6 +48,8 @@ public class RssTask {
     private RssSourceMapper rssSourceMapper;
     @Autowired
     private TableUtils tableUtils;
+    @Autowired
+    private PlaywrightHandle playwrightHandle;
 
     @Scheduled(cron = "0 */12 * * * ?")
     public void fetchRss() {
@@ -63,6 +66,7 @@ public class RssTask {
             log.info("没有任何启用的rss订阅。");
             return;
         }
+        this.page = playwrightHandle.newPage();
         List<RssSource> rssSources = rssSourceMapper.selectByIds(sourceIds);
 
         for (RssSource rssSource : rssSources) {
@@ -111,10 +115,11 @@ public class RssTask {
                 rssSourceMapper.fetch(rssSource);
             }
         }
+        this.page.close();
         log.info("rss订阅更新任务执行完毕。");
     }
 
-    private static List<Map<String, Object>>
+    private List<Map<String, Object>>
     buildRssMessage(RssSource rssSource, SyndEntry entry) {
         StringJoiner joiner = new StringJoiner("\n");
         if (entry.getTitle() != null && !entry.getTitle().isBlank()) {
@@ -141,7 +146,10 @@ public class RssTask {
         List<String> msgList = new ArrayList<>();
         msgList.add(ShiroUtils.arrayMsgToCode(msg));
         msgList.add(entry.getLink());
-        List<Map<String, Object>> fwmsg = ShiroUtils.generateForwardMsg(msgList);
-        return fwmsg;
+        this.page.navigate(entry.getLink());
+        String webScreenshot = Base64.getEncoder().encodeToString(this.page.screenshot());
+        msgList.add(ShiroUtils.arrayMsgToCode(ArrayMsgUtils.builder()
+                .img("base64://" + webScreenshot).build()));
+        return ShiroUtils.generateForwardMsg(msgList);
     }
 }
