@@ -147,7 +147,8 @@ public class RssTask {
         msgList.add(ShiroUtils.arrayMsgToCode(msg));
         msgList.add(entry.getLink());
         this.page.navigate(entry.getLink());
-        String webScreenshot = Base64.getEncoder().encodeToString(this.page.screenshot());
+        String webScreenshot = Base64.getEncoder().encodeToString(
+                this.page.screenshot(new Page.ScreenshotOptions().setFullPage(true)));
         msgList.add(ShiroUtils.arrayMsgToCode(ArrayMsgUtils.builder()
                 .img("base64://" + webScreenshot).build()));
         return ShiroUtils.generateForwardMsg(msgList);
