@@ -66,57 +66,60 @@ public class RssTask {
             log.info("没有任何启用的rss订阅。");
             return;
         }
-        this.page = playwrightHandle.newPage();
-        List<RssSource> rssSources = rssSourceMapper.selectByIds(sourceIds);
+        try {
+            this.page = playwrightHandle.newPage();
+            List<RssSource> rssSources = rssSourceMapper.selectByIds(sourceIds);
 
-        for (RssSource rssSource : rssSources) {
-            List<String> latestFeed = JSON.parseArray(rssSource.getLatestFeed(), String.class);
-            String url = rssSource.getUrl();
-            SyndFeed feed;
-            try {
-                URLConnection connection = new URI(url).toURL().openConnection();
-                connection.setConnectTimeout(20 * 1000);
-                connection.setReadTimeout(20 * 1000);
-                feed = new SyndFeedInput().build(new XmlReader(connection.getInputStream()));
-            } catch (FeedException | IOException | URISyntaxException e) {
-                log.info(e.toString());
-                continue;
-            }
+            for (RssSource rssSource : rssSources) {
+                List<String> latestFeed = JSON.parseArray(rssSource.getLatestFeed(), String.class);
+                String url = rssSource.getUrl();
+                SyndFeed feed;
+                try {
+                    URLConnection connection = new URI(url).toURL().openConnection();
+                    connection.setConnectTimeout(20 * 1000);
+                    connection.setReadTimeout(20 * 1000);
+                    feed = new SyndFeedInput().build(new XmlReader(connection.getInputStream()));
+                } catch (FeedException | IOException | URISyntaxException e) {
+                    log.info(e.toString());
+                    continue;
+                }
 
-            boolean hasUpdate = false;
-            for (SyndEntry entry : feed.getEntries()) {
-                if (latestFeed.stream().noneMatch(l -> l.equals(entry.getLink()))) {
-                    // 如果有新的entry
-                    hasUpdate = true;
+                boolean hasUpdate = false;
+                for (SyndEntry entry : feed.getEntries()) {
+                    if (latestFeed.stream().noneMatch(l -> l.equals(entry.getLink()))) {
+                        // 如果有新的entry
+                        hasUpdate = true;
 
-                    // 构建消息
-                    List<Map<String, Object>> fwmsg = buildRssMessage(rssSource, entry);
+                        // 构建消息
+                        List<Map<String, Object>> fwmsg = buildRssMessage(rssSource, entry);
 
-                    // 给所有订阅者发送消息
-                    List<RssSubscription> rssSubscriptions = rssSubscriptionMapper
-                            .selectEnableBySourceId(rssSource.getId());
-                    for (RssSubscription rssSubscription : rssSubscriptions) {
-                        Bot bot = botContainer.robots.get(eraConfig.getBot().getId());
-                        if (rssSubscription.getGroupId() != null) {
-                            bot.sendGroupForwardMsg(rssSubscription.getGroupId(), fwmsg);
-                        } else {
-                            bot.sendPrivateForwardMsg(rssSubscription.getUserId(), fwmsg);
+                        // 给所有订阅者发送消息
+                        List<RssSubscription> rssSubscriptions = rssSubscriptionMapper
+                                .selectEnableBySourceId(rssSource.getId());
+                        for (RssSubscription rssSubscription : rssSubscriptions) {
+                            Bot bot = botContainer.robots.get(eraConfig.getBot().getId());
+                            if (rssSubscription.getGroupId() != null) {
+                                bot.sendGroupForwardMsg(rssSubscription.getGroupId(), fwmsg);
+                            } else {
+                                bot.sendPrivateForwardMsg(rssSubscription.getUserId(), fwmsg);
+                            }
                         }
-                    }
 
-                    log.info("{}有新的条目：{}。", feed.getTitle(), entry.getTitle());
+                        log.info("{}有新的条目：{}。", feed.getTitle(), entry.getTitle());
+                    }
+                }
+                if (hasUpdate) {
+                    // 更新数据库
+                    rssSource.setLatestFeed(JSON.toJSONString(feed.getEntries().stream()
+                            .map(SyndEntry::getLink).toList()));
+                    rssSource.setFetchTime(LocalDateTime.now());
+                    rssSourceMapper.fetch(rssSource);
                 }
             }
-            if (hasUpdate) {
-                // 更新数据库
-                rssSource.setLatestFeed(JSON.toJSONString(feed.getEntries().stream()
-                        .map(SyndEntry::getLink).toList()));
-                rssSource.setFetchTime(LocalDateTime.now());
-                rssSourceMapper.fetch(rssSource);
-            }
+        } finally {
+            this.page.close();
+            log.info("rss订阅更新任务执行完毕。");
         }
-        this.page.close();
-        log.info("rss订阅更新任务执行完毕。");
     }
 
     private List<Map<String, Object>>
@@ -146,11 +149,16 @@ public class RssTask {
         List<String> msgList = new ArrayList<>();
         msgList.add(ShiroUtils.arrayMsgToCode(msg));
         msgList.add(entry.getLink());
-        this.page.navigate(entry.getLink());
-        String webScreenshot = Base64.getEncoder().encodeToString(
-                this.page.screenshot(new Page.ScreenshotOptions().setFullPage(true)));
-        msgList.add(ShiroUtils.arrayMsgToCode(ArrayMsgUtils.builder()
-                .img("base64://" + webScreenshot).build()));
+        String webScreenshot;
+        try {
+            playwrightHandle.navigate(this.page, entry.getLink());
+            webScreenshot = Base64.getEncoder().encodeToString(
+                    this.page.screenshot(new Page.ScreenshotOptions().setFullPage(true)));
+            msgList.add(ShiroUtils.arrayMsgToCode(ArrayMsgUtils.builder()
+                    .img("base64://" + webScreenshot).build()));
+        } catch (RuntimeException e) {
+            log.info(e.toString());
+        }
         return ShiroUtils.generateForwardMsg(msgList);
     }
 }
