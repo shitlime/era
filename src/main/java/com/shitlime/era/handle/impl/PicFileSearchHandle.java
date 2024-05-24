@@ -46,7 +46,7 @@ public class PicFileSearchHandle implements DatasetSearchHandle {
         // 校验md5，一致时跳过数据库初始化
         StringBuilder picPaths = new StringBuilder();
         for (File pic : picArray) {
-            picPaths.append(pic.getPath());
+            picPaths.append(pic.getAbsolutePath());
         }
         String md5 = DigestUtils.md5DigestAsHex(picPaths.toString().getBytes());
         if (md5.equals(datasetConfig.getMd5()) && tableUtils.isExist(tableName)) {
@@ -65,12 +65,12 @@ public class PicFileSearchHandle implements DatasetSearchHandle {
                     case UNICODE -> {
                         String key = UnicodeUtils.unicodeToCharacter(
                                 originRegex.matcher(picName).replaceFirst(keyRegex));
-                        String values = pic.getPath();
+                        String values = pic.getAbsolutePath();
                         dataItems.add(new DataItem(key, values));
                     }
                     case CHARACTER -> {
                         String key = originRegex.matcher(picName).replaceFirst(keyRegex);
-                        String values = pic.getPath();
+                        String values = pic.getAbsolutePath();
                         dataItems.add(new DataItem(key, values));
                     }
                 }
