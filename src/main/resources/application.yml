@@ -42,16 +42,18 @@ mybatis:
   mapper-locations: classpath:mapper/*.xml
 
 era:
-  resources:
-    path:
-      dataset:
-        path: resources/static/dataset
-        table-name-prefix: dataset_
-      sqlite: resources/static/sqlite
-      fonts: resources/static/fonts
-      temp: resources/tmp
   bot:
     name: era
     id: ${era.bot.id}
     admin: ${era.bot.admin}  # list
     cmd: "|"
+  resources:
+    path:
+      sqlite: resources/static/sqlite
+      fonts: resources/static/fonts
+      temp: resources/tmp
+  plugin:
+    character-search:
+      dataset:
+        path: resources/static/dataset
+        table-name-prefix: dataset_

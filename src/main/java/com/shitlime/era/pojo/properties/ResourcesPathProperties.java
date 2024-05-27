@@ -5,10 +5,6 @@ import lombok.Data;
 @Data
 public class ResourcesPathProperties {
     /**
-     * 数据集相关
-     */
-    private ResourcesDatasetProperties dataset;
-    /**
      * sqlite数据库路径
      */
     private String sqlite;

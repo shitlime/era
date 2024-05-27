@@ -68,7 +68,7 @@ public class CharacterSearchService {
         // 装载其他数据集
         String rootPath = System.getProperty("user.dir");
         File datasetPath = new File(rootPath,
-                eraConfig.getResources().getPath().getDataset().getPath());
+                eraConfig.getPlugin().getCharacterSearch().getDataset().getPath());
         File[] files = Objects.requireNonNull(datasetPath.listFiles());
         Arrays.sort(files, Comparator.comparing(File::getName));
         for (File file : files) {
@@ -269,8 +269,8 @@ public class CharacterSearchService {
         Yaml yaml = new Yaml();
         DatasetConfig datasetConfig = yaml.loadAs(reader, DatasetConfig.class);
         reader.close();
-        String tableName = eraConfig.getResources().getPath().getDataset()
-                .getTableNamePrefix() + datasetConfig.getId();
+        String tableName = eraConfig.getPlugin().getCharacterSearch()
+                .getDataset().getTableNamePrefix() + datasetConfig.getId();
         return new Dataset(datasetConfig, tableName, file);
     }
 
