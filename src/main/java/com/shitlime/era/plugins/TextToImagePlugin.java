@@ -12,6 +12,7 @@ import com.mikuac.shiro.enums.MsgTypeEnum;
 import com.mikuac.shiro.model.ArrayMsg;
 import com.shitlime.era.config.EraConfig;
 import com.shitlime.era.service.TextToImageService;
+import com.shitlime.era.utils.EraBotUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -37,13 +38,8 @@ public class TextToImagePlugin extends BotPlugin {
         if (event.getMessage().matches(getCmd())) {
             // 命令式渲染
             Pattern pattern = Pattern.compile(getCmd());
-            StringBuilder builder = new StringBuilder();
-            event.getArrayMsg().forEach(arrayMsg -> {
-                if (MsgTypeEnum.text.equals(arrayMsg.getType())) {
-                    builder.append(arrayMsg.getData().get("text"));
-                }
-            });
-            Matcher matcher = pattern.matcher(builder.toString());
+            String msgPlain = EraBotUtils.getMsgPlain(event.getArrayMsg());
+            Matcher matcher = pattern.matcher(msgPlain);
             if (matcher.find()) {
                 String tofu = matcher.group(1);
                 sendImage(bot, event, tofu);

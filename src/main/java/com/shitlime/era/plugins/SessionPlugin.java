@@ -81,6 +81,17 @@ public abstract class SessionPlugin extends BotPlugin {
     }
 
     /**
+     * 打开一个独享会话
+     * @param event      onebot event
+     * @param sessionTag tag 用于区分不同的会话
+     * @param timeToLive 会话超时时间
+     * @return
+     */
+    protected boolean openExclusiveSession(AnyMessageEvent event, String sessionTag, int timeToLive) {
+        return openExclusiveSession(event, sessionTag, timeToLive, () -> {});
+    }
+
+    /**
      * 打开一个共享会话
      *
      * @param event      onebot event

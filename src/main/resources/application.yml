@@ -18,6 +18,7 @@ shiro:
     - com.shitlime.era.plugins.StatePlugin
     - com.shitlime.era.plugins.RssManagePlugin
     - com.shitlime.era.plugins.TextToImagePlugin
+    - com.shitlime.era.plugins.AIChatPlugin
   # 限速器（令牌桶算法）
   limiter:
     # 是否启用限速器
@@ -57,3 +58,9 @@ era:
       dataset:
         path: resources/static/dataset
         table-name-prefix: dataset_
+    ai-chat:
+      baidu:
+        api-key: ${era.plugin.ai-chat.baidu.api-key}
+        secret-key: ${era.plugin.ai-chat.baidu.secret-key}
+        # 根据百度API，第一句是用户，第二句是AI回复，此处list长度为偶数，用于指定一些初始状态
+        initial-chat: ${era.plugin.ai-chat.baidu.initial-chat}  # list
