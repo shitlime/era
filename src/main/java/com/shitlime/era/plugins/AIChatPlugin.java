@@ -58,6 +58,7 @@ public class AIChatPlugin extends SessionPlugin {
             bot.sendMsg(event,
                     ArrayMsgUtils.builder()
                             .at(event.getUserId())
+                            .text("\n")
                             .text(reply == null ? "发生未知错误，将清空历史对话。" : reply)
                             .build(),
                     true);
