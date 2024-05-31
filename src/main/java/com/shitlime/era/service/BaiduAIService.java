@@ -41,6 +41,7 @@ public class BaiduAIService {
 
     /**
      * 向AI发送信息
+     *
      * @param userId  用户id
      * @param message 发送的信息
      * @return AI的回复
@@ -86,6 +87,7 @@ public class BaiduAIService {
 
     /**
      * 清除用户聊天历史
+     *
      * @param userId
      */
     public void clear(Long userId) {
@@ -94,6 +96,7 @@ public class BaiduAIService {
 
     /**
      * 组装初始会话数据
+     *
      * @return
      */
     private Map<String, List<Map<String, String>>> getInitialSession() {
@@ -116,14 +119,17 @@ public class BaiduAIService {
 
     /**
      * 发送对话请求
+     *
      * @param msgData
      * @return
      */
     private synchronized String sendMsgData(Map<String, Object> msgData) {
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request2 = HttpRequest.newBuilder()
-                    .uri(new URI("https://aip.baidubce.com/rpc/2.0/ai_custom/v1/" +
-                            "wenxinworkshop/chat/yi_34b_chat?access_token=" + getAccessToken()))
+                    .uri(new URI(String.format("https://aip.baidubce.com/rpc/2.0/ai_custom/v1" +
+                                    "/wenxinworkshop/chat/%s?access_token=%s",
+                            eraConfig.getPlugin().getAiChat().getBaidu().getModelId(),
+                            getAccessToken())))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(JSON.toJSONString(msgData)))
                     .build();
@@ -145,6 +151,7 @@ public class BaiduAIService {
 
     /**
      * 获取 access token
+     *
      * @return
      */
     @SneakyThrows(IOException.class)
@@ -184,6 +191,7 @@ public class BaiduAIService {
 
     /**
      * 获取新的 access token
+     *
      * @return
      */
     private Map<String, String> getAccessTokenData() {

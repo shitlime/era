@@ -62,5 +62,6 @@ era:
       baidu:
         api-key: ${era.plugin.ai-chat.baidu.api-key}
         secret-key: ${era.plugin.ai-chat.baidu.secret-key}
+        model-id: Yi-34B-Chat
         # 根据百度API，第一句是用户，第二句是AI回复，此处list长度为偶数，用于指定一些初始状态
         initial-chat: ${era.plugin.ai-chat.baidu.initial-chat}  # list

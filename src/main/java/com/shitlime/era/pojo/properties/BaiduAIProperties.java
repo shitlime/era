@@ -15,6 +15,10 @@ public class BaiduAIProperties {
      */
     private String secretKey;
     /**
+     * 模块名称
+     */
+    private String modelId;
+    /**
      * 初始聊天记录
      */
     private List<String> initialChat;
