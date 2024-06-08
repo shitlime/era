@@ -23,6 +23,7 @@ public class UnicodeUtils {
         if (codePoints.length != 1) {
             throw new IllegalArgumentException("Not single character.");
         }
-        return Character.UnicodeBlock.of(codePoints[0]).toString();
+        // todo 使用更完整的unicode15.1区块信息 （当前Java21仅支持unicode15）
+        return "" + Character.UnicodeBlock.of(codePoints[0]);
     }
 }
