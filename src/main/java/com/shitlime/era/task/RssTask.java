@@ -85,7 +85,7 @@ public class RssTask {
                 }
 
                 boolean hasUpdate = false;
-                for (SyndEntry entry : feed.getEntries()) {
+                for (SyndEntry entry : feed.getEntries().reversed()) {
                     if (latestFeed.stream().noneMatch(l -> l.equals(entry.getLink()))) {
                         // 如果有新的entry
                         hasUpdate = true;
