@@ -3,7 +3,6 @@ package com.shitlime.era.handle.impl;
 import com.shitlime.era.pojo.dto.Dataset;
 import com.shitlime.era.handle.DatasetSearchHandle;
 import com.shitlime.era.utils.UnicodeUtils;
-import com.sun.tools.javac.Main;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -29,10 +28,10 @@ public class UnicodeSearchHandle implements DatasetSearchHandle {
     @Override
     public void load(Dataset dataset) {
         // 加载 Unicode 区块信息
-        ClassLoader classLoader = Main.class.getClassLoader();
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(Objects.requireNonNull(
-                        classLoader.getResourceAsStream("unicode/Blocks_cn.txt"))))
+                        getClass().getClassLoader()
+                                .getResourceAsStream("unicode/Blocks_cn.txt"))))
         ) {
             this.unicodeBlockInfo = reader.lines()
                     .filter(s -> (!s.isBlank() && !s.startsWith("#")))
