@@ -63,6 +63,7 @@ public class CharacterSearchService {
         unicodeConfig.setType(DatasetTypeEnum.UNICODE);
         unicodeConfig.setName("Unicode");
         unicodeConfig.setId("u");
+        unicodeSearchHandle.load();
         datasetList.add(new Dataset(unicodeConfig, null, null));
 
         // 装载其他数据集

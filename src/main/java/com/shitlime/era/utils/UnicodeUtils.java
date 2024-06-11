@@ -18,12 +18,16 @@ public class UnicodeUtils {
         return Integer.toHexString(codePoints[0]);
     }
 
+    /**
+     * 获取 Java 内部的 UnicodeBlock 信息
+     * @param character
+     * @return
+     */
     public static String characterUnicodeBlock(String character) {
         int[] codePoints = character.codePoints().toArray();
         if (codePoints.length != 1) {
             throw new IllegalArgumentException("Not single character.");
         }
-        // todo 使用更完整的unicode15.1区块信息 （当前Java21仅支持unicode15）
         return "" + Character.UnicodeBlock.of(codePoints[0]);
     }
 }

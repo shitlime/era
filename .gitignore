@@ -47,7 +47,7 @@ resources/static/sqlite/*
 !resources/static/sqlite/README.md
 resources/static/fonts/*
 !resources/static/fonts/README.md
-resources/static/tmp/*
+resources/tmp/*
 
 ### 测试用文件 ###
 src/main/java/com/shitlime/era/Test*.java
