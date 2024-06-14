@@ -45,10 +45,10 @@ public class AIChatPlugin extends SessionPlugin {
             return MESSAGE_BLOCK;
         } else if (atList.size() == 1
                 && eraConfig.getBot().getId().equals(atList.getFirst())
-                && !hasExclusiveSession(event, AI_CHAT_TAG)  // 用作冷却判断
+                && !hasExclusiveSession(event, AI_CHAT_TAG)  // 判断是否正在进行一回合对话（不允许连续发出对话）
         ) {
             // 聊天对话
-            openExclusiveSession(event, AI_CHAT_TAG, 25);  // 设置冷却
+            openExclusiveSession(event, AI_CHAT_TAG, 200);  // 设置超时自动删除对话
             String msgPlain = EraBotUtils.getMsgPlain(event.getArrayMsg());
             log.info("AI聊天：{}", msgPlain);
             if (msgPlain == null || msgPlain.isBlank()) {
@@ -62,6 +62,7 @@ public class AIChatPlugin extends SessionPlugin {
                             .text(reply == null ? "发生未知错误，将清空历史对话。" : reply)
                             .build(),
                     true);
+            closeExclusiveSession(event, AI_CHAT_TAG);  // 完成一回合对话
             return MESSAGE_BLOCK;
         }
         return MESSAGE_IGNORE;
