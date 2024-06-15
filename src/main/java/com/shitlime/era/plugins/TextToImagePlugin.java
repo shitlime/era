@@ -43,6 +43,7 @@ public class TextToImagePlugin extends BotPlugin {
             if (matcher.find()) {
                 String tofu = matcher.group(1);
                 sendImage(bot, event, tofu);
+                return MESSAGE_BLOCK;
             }
         } else if (
             event.getArrayMsg().stream().anyMatch(arrayMsg ->
@@ -71,6 +72,7 @@ public class TextToImagePlugin extends BotPlugin {
                     }
                 });
                 sendImage(bot, event, builder.toString());
+                return MESSAGE_BLOCK;
             }
         }
         return MESSAGE_IGNORE;
