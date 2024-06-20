@@ -84,8 +84,16 @@ public class RssTask {
                     continue;
                 }
 
-                boolean hasUpdate = false;
+                // 处理 feed entries （操作：倒序、去重）
+                List<SyndEntry> entryList = new ArrayList<>();
                 for (SyndEntry entry : feed.getEntries().reversed()) {
+                    if (!entryList.contains(entry)) {
+                        entryList.add(entry);
+                    }
+                }
+
+                boolean hasUpdate = false;
+                for (SyndEntry entry : entryList) {
                     if (latestFeed.stream().noneMatch(l -> l.equals(entry.getLink()))) {
                         // 如果有新的entry
                         hasUpdate = true;
