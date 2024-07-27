@@ -18,6 +18,7 @@ import com.shitlime.era.mapper.RssSourceMapper;
 import com.shitlime.era.mapper.RssSubscriptionMapper;
 import com.shitlime.era.pojo.entry.RssSource;
 import com.shitlime.era.pojo.entry.RssSubscription;
+import com.shitlime.era.utils.JsoupUtils;
 import com.shitlime.era.utils.TableUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -141,7 +142,7 @@ public class RssTask {
         ) {
             String description = entry.getDescription().getValue().trim();
             if ("text/html".equals(entry.getDescription().getType())) {
-                description = Jsoup.parse(description).text();
+                description = JsoupUtils.getPlainText(Jsoup.parse(description));
             }
             joiner.add("");
             joiner.add(description);
