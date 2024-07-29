@@ -53,6 +53,7 @@ jobs:
 
   dependency-submission:
 
+    if: github.event_name != 'pull_request'  # 仅在非 pull_request 事件时执行
     runs-on: ubuntu-latest
     permissions:
       contents: write
