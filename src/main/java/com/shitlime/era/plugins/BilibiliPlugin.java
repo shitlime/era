@@ -37,7 +37,7 @@ public class BilibiliPlugin extends BotPlugin {
                 List<ArrayMsg> msgList = bilibiliService.autoGetVideoInfo(bvid);
                 bot.sendMsg(event, msgList, true);
                 // 如果消息不只有BV号，发送纯BV号
-                if (msgPlain.trim().equals(bvid)) {
+                if (!msgPlain.trim().equals(bvid)) {
                     bot.sendMsg(event, ArrayMsgUtils.builder().text(bvid).build(), true);
                 }
                 return MESSAGE_BLOCK;
