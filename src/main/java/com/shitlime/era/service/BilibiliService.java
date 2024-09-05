@@ -73,7 +73,7 @@ public class BilibiliService {
                         .text("点赞：" + like + "\n")
                         .text("投稿：" + pubdate + "\n")
                         .text("简介：" + desc.substring(0, min(desc.length(), 57)) + "\n")
-                        .text("ID：" + aid + "\n")
+                        .text("ID：av" + aid)
                         .build();
             }
             case -400 -> {
