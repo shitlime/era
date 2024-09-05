@@ -19,6 +19,7 @@ shiro:
     - com.shitlime.era.plugins.RssManagePlugin
     - com.shitlime.era.plugins.TextToImagePlugin
     - com.shitlime.era.plugins.AIChatPlugin
+    - com.shitlime.era.plugins.BilibiliPlugin
   # 限速器（令牌桶算法）
   limiter:
     # 是否启用限速器
