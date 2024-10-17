@@ -77,6 +77,7 @@ public class CharacterSearchService {
         log.info("数据集文件夹内容：" + Arrays.toString(files));
         for (File file : files) {
             if (!file.isDirectory()) {
+                log.info("【不是文件夹，跳过循环】");
                 continue;
             }
             Dataset dataset = loadDatasetConfig(file);
@@ -268,13 +269,20 @@ public class CharacterSearchService {
      * @throws IOException
      */
     private Dataset loadDatasetConfig(File file) throws IOException {
+        log.info("加载数据集配置文件1");
         File configPath = new File(file, "config.yml");
+        log.info("加载数据集配置文件2");
         FileReader reader = new FileReader(configPath);
+        log.info("加载数据集配置文件3");
         Yaml yaml = new Yaml();
+        log.info("加载数据集配置文件4");
         DatasetConfig datasetConfig = yaml.loadAs(reader, DatasetConfig.class);
+        log.info("加载数据集配置文件5");
         reader.close();
+        log.info("加载数据集配置文件6");
         String tableName = eraConfig.getPlugin().getCharacterSearch()
                 .getDataset().getTableNamePrefix() + datasetConfig.getId();
+        log.info("加载数据集配置文件7");
         return new Dataset(datasetConfig, tableName, file);
     }
 
