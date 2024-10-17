@@ -272,11 +272,18 @@ public class CharacterSearchService {
         log.info("加载数据集配置文件1");
         File configPath = new File(file, "config.yml");
         log.info("加载数据集配置文件2");
+        log.info("Config path: " + configPath.getAbsolutePath());
+        log.info("File exists: " + configPath.exists());
+        log.info("File readable: " + configPath.canRead());
         FileReader reader = new FileReader(configPath);
         log.info("加载数据集配置文件3");
         Yaml yaml = new Yaml();
         log.info("加载数据集配置文件4");
-        DatasetConfig datasetConfig = yaml.loadAs(reader, DatasetConfig.class);
+        try {
+            DatasetConfig datasetConfig = yaml.loadAs(reader, DatasetConfig.class);
+        } catch (Exception e) {
+            log.error("YAML 解析出错: ", e);
+        }
         log.info("加载数据集配置文件5");
         reader.close();
         log.info("加载数据集配置文件6");
