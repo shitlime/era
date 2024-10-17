@@ -74,7 +74,7 @@ public class CharacterSearchService {
         log.info("当前 datasetPath = " + datasetPath);
         File[] files = Objects.requireNonNull(datasetPath.listFiles());
         Arrays.sort(files, Comparator.comparing(File::getName));
-        log.info("数据集文件夹内容：" + files);
+        log.info("数据集文件夹内容：" + Arrays.toString(files));
         for (File file : files) {
             if (!file.isDirectory()) {
                 continue;
