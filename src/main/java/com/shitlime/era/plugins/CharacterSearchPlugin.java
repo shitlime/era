@@ -38,6 +38,7 @@ public class CharacterSearchPlugin {
     public void init() {
         log.info("异步装载数据集...");
         CompletableFuture.runAsync(() -> characterSearchService.loadDatasets());
+        log.info("异步装载数据集 完成"); 
     }
 
     /**
