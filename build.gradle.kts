@@ -57,13 +57,3 @@ tasks.register<Copy>("copyRuntimeLibraries") {
 	dependsOn("cleanRuntimeLibraries")
 }
 
-tasks.bootJar {
-	exclude("*.jar")
-	dependsOn("cleanRuntimeLibraries", "copyRuntimeLibraries")
-
-	manifest {
-		attributes(
-			"Class-Path" to configurations.runtimeClasspath.get().files.joinToString(" ") { "lib/${it.name}" }
-		)
-	}
-}
