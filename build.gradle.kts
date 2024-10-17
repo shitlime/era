@@ -45,8 +45,6 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
-// pr3 ==========================================
-
 tasks.register<Delete>("cleanRuntimeLibraries") {
 	delete(layout.buildDirectory.dir("libs/lib"))
 }
@@ -58,6 +56,12 @@ tasks.register<Copy>("copyRuntimeLibraries") {
 }
 
 tasks.bootJar {
-	dependsOn("cleanRuntimeLibraries", "copyRuntimeLibraries")
 	exclude("*.jar")
+	dependsOn("cleanRuntimeLibraries", "copyRuntimeLibraries")
+
+	manifest {
+		attributes(
+			"Class-Path" to configurations.runtimeClasspath.get().files.joinToString(" ") { "lib/${it.name}" }
+		)
+	}
 }
