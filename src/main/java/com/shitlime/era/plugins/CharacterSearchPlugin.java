@@ -37,6 +37,15 @@ public class CharacterSearchPlugin {
     @PostConstruct
     public void init() {
         log.info("异步装载数据集...");
+        
+        // 确保 DatasetConfig 类被加载
+        try {
+            Class.forName("com.shitlime.era.pojo.config.dataset.DatasetConfig");
+        } catch (ClassNotFoundException e) {
+            log.error("DatasetConfig 类未找到", e);
+            return;
+        }
+
         CompletableFuture.runAsync(() -> characterSearchService.loadDatasets());
         log.info("异步装载数据集 完成"); 
     }
