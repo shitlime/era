@@ -279,8 +279,9 @@ public class CharacterSearchService {
         log.info("加载数据集配置文件3");
         Yaml yaml = new Yaml();
         log.info("加载数据集配置文件4");
+        DatasetConfig datasetConfig = new DatasetConfig();
         try {
-            DatasetConfig datasetConfig = yaml.loadAs(reader, DatasetConfig.class);
+            datasetConfig = yaml.loadAs(reader, DatasetConfig.class);
         } catch (Exception e) {
             log.error("YAML 解析出错: ", e);
         }
