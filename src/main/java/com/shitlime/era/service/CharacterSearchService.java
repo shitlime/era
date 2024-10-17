@@ -287,6 +287,9 @@ public class CharacterSearchService {
             datasetConfig = yaml.loadAs(reader, DatasetConfig.class);
         } catch (Exception e) {
             log.error("YAML 解析出错: ", e);
+            log.info("ClassLoader: " + DatasetConfig.class.getClassLoader());
+            log.info("Thread Context ClassLoader: " + Thread.currentThread().getContextClassLoader());
+            log.info("++++++++++++++++  +++++++++++++++++++");
         }
         log.info("加载数据集配置文件5");
         reader.close();
