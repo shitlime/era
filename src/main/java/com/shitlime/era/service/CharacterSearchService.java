@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.File;
 import java.io.FileReader;
@@ -278,8 +277,7 @@ public class CharacterSearchService {
         log.info("File readable: " + configPath.canRead());
         FileReader reader = new FileReader(configPath);
         log.info("加载数据集配置文件3");
-        Yaml yaml = new Yaml(new Constructor(DatasetConfig.class));
-        // Yaml yaml = new Yaml();
+        Yaml yaml = new Yaml();
         log.info("加载数据集配置文件4");
         DatasetConfig datasetConfig = new DatasetConfig();
         try {
