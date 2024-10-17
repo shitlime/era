@@ -58,14 +58,5 @@ tasks.register<Copy>("copyRuntimeLibraries") {
 }
 
 tasks.bootJar {
-	dependsOn("cleanRuntimeLibraries", "copyRuntimeLibraries")
-
-	// 不排除 *.jar，让 Spring Boot 处理依赖打包
-	// exclude("*.jar") // 注释掉这行
-	
-	manifest {
-		attributes(
-			"Main-Class" to "com.shitlime.era.EraApplication"  // 替换为你的主类
-		)
-	}
+    layered()  // 启用分层 JAR 特性
 }
