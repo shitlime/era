@@ -277,7 +277,10 @@ public class CharacterSearchService {
         log.info("File readable: " + configPath.canRead());
         FileReader reader = new FileReader(configPath);
         log.info("加载数据集配置文件3");
-        Yaml yaml = new Yaml();
+        Constructor constructor = new Constructor(DatasetConfig.class);
+        constructor.setClassLoader(this.getClass().getClassLoader());  // 显式设置类加载器
+        Yaml yaml = new Yaml(constructor);
+        // Yaml yaml = new Yaml();
         log.info("加载数据集配置文件4");
         DatasetConfig datasetConfig = new DatasetConfig();
         try {
