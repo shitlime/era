@@ -58,5 +58,6 @@ tasks.register<Copy>("copyRuntimeLibraries") {
 }
 
 tasks.bootJar {
-    layered()  // 启用分层 JAR 特性
+	dependsOn("cleanRuntimeLibraries", "copyRuntimeLibraries")
+	exclude("*.jar")
 }
