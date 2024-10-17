@@ -57,3 +57,15 @@ tasks.register<Copy>("copyRuntimeLibraries") {
 	dependsOn("cleanRuntimeLibraries")
 }
 
+tasks.bootJar {
+	dependsOn("cleanRuntimeLibraries", "copyRuntimeLibraries")
+
+	// 不排除 *.jar，让 Spring Boot 处理依赖打包
+	// exclude("*.jar") // 注释掉这行
+	
+	manifest {
+		attributes(
+			"Class-Path" to configurations.runtimeClasspath.get().files.joinToString(" ") { "lib/${it.name}" }
+		)
+	}
+}
