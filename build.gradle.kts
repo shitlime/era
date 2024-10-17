@@ -65,7 +65,7 @@ tasks.bootJar {
 	
 	manifest {
 		attributes(
-			"Class-Path" to configurations.runtimeClasspath.get().files.joinToString(" ") { "lib/${it.name}" }
+			"Main-Class" to "com.shitlime.era.EraApplication"  // 替换为你的主类
 		)
 	}
 }
