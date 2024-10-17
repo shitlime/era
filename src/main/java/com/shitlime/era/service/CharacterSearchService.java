@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.loader.LoaderOptions;
 
 import java.io.File;
 import java.io.FileReader;
@@ -279,9 +278,7 @@ public class CharacterSearchService {
         log.info("File readable: " + configPath.canRead());
         FileReader reader = new FileReader(configPath);
         log.info("加载数据集配置文件3");
-        Constructor constructor = new Constructor(DatasetConfig.class);
-        constructor.setClassLoader(this.getClass().getClassLoader());  // 显式设置类加载器
-        Yaml yaml = new Yaml(constructor);
+        Yaml yaml = new Yaml(new Constructor(DatasetConfig.class));
         // Yaml yaml = new Yaml();
         log.info("加载数据集配置文件4");
         DatasetConfig datasetConfig = new DatasetConfig();
