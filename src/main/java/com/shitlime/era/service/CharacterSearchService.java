@@ -68,10 +68,13 @@ public class CharacterSearchService {
 
         // 装载其他数据集
         String rootPath = System.getProperty("user.dir");
+        log.info("当前 user.dir 目录：" + rootPath);
         File datasetPath = new File(rootPath,
                 eraConfig.getPlugin().getCharacterSearch().getDataset().getPath());
+        log.info("当前 datasetPath = " + datasetPath);
         File[] files = Objects.requireNonNull(datasetPath.listFiles());
         Arrays.sort(files, Comparator.comparing(File::getName));
+        log.info("数据集文件夹内容：" + files);
         for (File file : files) {
             if (!file.isDirectory()) {
                 continue;
