@@ -39,8 +39,13 @@ public class BilibiliService {
                 JSONObject data = jsonObject.getJSONObject("data");
                 // 标题
                 String title = data.getString("title");
-                // 封面url
+                // 封面
                 String picUrl = data.getString("pic");
+                String picBase64 = FileUtils.fileToBase64(URI.create(picUrl));
+                String cover = "[视频封面]";
+                if (picBase64 != null) {
+                    cover = "base64://" + picBase64;
+                }
                 // up主
                 String ownerName = data.getJSONObject("owner").getString("name");
                 // 分区
@@ -83,7 +88,7 @@ public class BilibiliService {
                     if (segmentsCount > 0) {
                         return ArrayMsgUtils.builder()
                                 .text("【⚠该视频可能含有广告⚠】\n" + title + "\n")
-                                .img("base64://" + FileUtils.fileToBase64(URI.create(picUrl)))
+                                .img(cover)
                                 .text("up主：" + ownerName + "\n")
                                 .text("分区：" + tname + "\n")
                                 .text("播放：" + view + " ")
@@ -92,7 +97,7 @@ public class BilibiliService {
                                 .text("点赞：" + like + "\n")
                                 .text("投稿：" + pubdate + "\n")
                                 .text("简介：" + desc.substring(0, min(desc.length(), 57)) + "\n")
-                                .text("ID：av" + aid)
+                                .text("ID：av" + aid + "\n")
                                 .text("⚠疑似广告片段(" + segmentsCount + ")：\n")
                                 .text(segmentsInfo.toString())
                                 .build();
@@ -101,7 +106,7 @@ public class BilibiliService {
 
                 return ArrayMsgUtils.builder()
                         .text(title + "\n")
-                        .img("base64://" + FileUtils.fileToBase64(URI.create(picUrl)))
+                        .img(cover)
                         .text("up主：" + ownerName + "\n")
                         .text("分区：" + tname + "\n")
                         .text("播放：" + view + " ")

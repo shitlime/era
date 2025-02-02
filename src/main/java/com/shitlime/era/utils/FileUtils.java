@@ -37,23 +37,29 @@ public class FileUtils {
      * @return
      */
     public static String fileToBase64(URI uri) {
-        // 访问uri得到文件的数据
-        // 转换成base64字符串返回
-        try (HttpClient httpClient = HttpClient.newHttpClient()) {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(uri)
-                    .build();
-            // 发送请求并获取响应
-            HttpResponse<byte[]> response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
+        for (int count = 1; count < 3; count++) {
+            // 访问uri得到文件的数据
+            // 转换成base64字符串返回
+            try (HttpClient httpClient = HttpClient.newHttpClient()) {
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(uri)
+                        .build();
+                // 发送请求并获取响应
+                HttpResponse<byte[]> response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
 
-            // 获取响应的字节数组
-            byte[] responseBody = response.body();
+                if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                    // 获取响应的字节数组
+                    byte[] responseBody = response.body();
 
-            // 将字节数组编码为 Base64 字符串
-            return Base64.getEncoder().encodeToString(responseBody);
-        } catch (IOException | InterruptedException e) {
-            log.warn(e.getMessage());
-            return null;
+                    // 将字节数组编码为 Base64 字符串
+                    return Base64.getEncoder().encodeToString(responseBody);
+                } else {
+                    log.warn("HTTP request failed with status code: {}", response.statusCode());
+                }
+            } catch (IOException | InterruptedException e) {
+                log.warn(e.getMessage());
+            }
         }
+        return null;
     }
 }
