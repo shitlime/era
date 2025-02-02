@@ -1,6 +1,7 @@
 package com.shitlime.era.service;
 
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.mikuac.shiro.common.utils.ArrayMsgUtils;
 import com.mikuac.shiro.model.ArrayMsg;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.StringJoiner;
 
 import static java.lang.Math.min;
 
@@ -61,6 +63,41 @@ public class BilibiliService {
                 String desc = data.getString("desc");
                 // ID
                 String aid = data.getString("aid");
+                String bvid = data.getString("bvid");
+
+                // 查询跳过片段信息
+                String segmentsJson = getVideoSkipSegmentsJson(bvid);
+                if (segmentsJson != null) {
+                    JSONArray segments = JSON.parseArray(segmentsJson);
+                    long segmentsCount = segments.size();
+                    StringJoiner segmentsInfo = new StringJoiner("\n");
+                    for (Object obj : segments) {
+                        JSONObject jo = (JSONObject) obj;
+                        JSONArray seg = jo.getJSONArray("segment");
+                        if (seg != null && seg.size() == 2) {
+                            double start = seg.getDouble(0); // 开始时间
+                            double end = seg.getDouble(1);   // 结束时间
+                            segmentsInfo.add(formatTime(start) + " - " + formatTime(end));
+                        }
+                    }
+                    if (segmentsCount > 0) {
+                        return ArrayMsgUtils.builder()
+                                .text("【⚠该视频可能含有广告⚠】\n" + title + "\n")
+                                .img("base64://" + FileUtils.fileToBase64(URI.create(picUrl)))
+                                .text("up主：" + ownerName + "\n")
+                                .text("分区：" + tname + "\n")
+                                .text("播放：" + view + " ")
+                                .text("收藏：" + favorite + "\n")
+                                .text("投币：" + coin + " ")
+                                .text("点赞：" + like + "\n")
+                                .text("投稿：" + pubdate + "\n")
+                                .text("简介：" + desc.substring(0, min(desc.length(), 57)) + "\n")
+                                .text("ID：av" + aid)
+                                .text("⚠疑似广告片段(" + segmentsCount + ")：\n")
+                                .text(segmentsInfo.toString())
+                                .build();
+                    }
+                }
 
                 return ArrayMsgUtils.builder()
                         .text(title + "\n")
@@ -90,6 +127,9 @@ public class BilibiliService {
             }
             case 62004 -> {
                 return ArrayMsgUtils.builder().text("稿件审核中").build();
+            }
+            case 62012 -> {
+                return ArrayMsgUtils.builder().text("仅UP主自己可见").build();
             }
             default -> {
                 return ArrayMsgUtils.builder().text("解析失败，未知错误").build();
@@ -133,5 +173,46 @@ public class BilibiliService {
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * 获取跳过片段信息
+     * 参考文档 https://github.com/hanydd/BilibiliSponsorBlock/wiki/API
+     *
+     * @param id 传入视频的BV号字符串
+     * @return json字符串
+     */
+    private String getVideoSkipSegmentsJson(String id) {
+        // 访问api得到数据
+        try (HttpClient httpClient = HttpClient.newHttpClient()) {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://bsbsb.top/api/skipSegments?videoID=" + id))
+                    .header("Content-Type", "application/json")
+                    .GET()
+                    .build();
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                return response.body();
+            }
+            return null;
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 将秒数转换为时:分:秒格式
+     *
+     * @param seconds 秒数
+     * @return 时:分:秒格式的字符串
+     */
+    private static String formatTime(double seconds) {
+        int totalSeconds = (int) seconds; // 取整
+        int hours = totalSeconds / 3600;  // 计算小时
+        int minutes = (totalSeconds % 3600) / 60; // 计算分钟
+        int secs = totalSeconds % 60; // 计算秒数
+
+        // 格式化输出
+        return String.format("%02d:%02d:%02d", hours, minutes, secs);
     }
 }
