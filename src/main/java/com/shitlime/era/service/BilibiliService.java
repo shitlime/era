@@ -41,11 +41,6 @@ public class BilibiliService {
                 String title = data.getString("title");
                 // 封面
                 String picUrl = data.getString("pic");
-                String picBase64 = FileUtils.fileToBase64(URI.create(picUrl));
-                String cover = "[视频封面]";
-                if (picBase64 != null) {
-                    cover = "base64://" + picBase64;
-                }
                 // up主
                 String ownerName = data.getJSONObject("owner").getString("name");
                 // 分区
@@ -88,7 +83,7 @@ public class BilibiliService {
                     if (segmentsCount > 0) {
                         return ArrayMsgUtils.builder()
                                 .text("【⚠该视频可能含有广告⚠】\n" + title + "\n")
-                                .img(cover)
+                                .img(picUrl)
                                 .text("up主：" + ownerName + "\n")
                                 .text("分区：" + tname + "\n")
                                 .text("播放：" + view + " ")
@@ -106,7 +101,7 @@ public class BilibiliService {
 
                 return ArrayMsgUtils.builder()
                         .text(title + "\n")
-                        .img(cover)
+                        .img(picUrl)
                         .text("up主：" + ownerName + "\n")
                         .text("分区：" + tname + "\n")
                         .text("播放：" + view + " ")
