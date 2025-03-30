@@ -69,18 +69,22 @@ public class BilibiliService {
                 String segmentsJson = getVideoSkipSegmentsJson(bvid);
                 if (segmentsJson != null) {
                     JSONArray segments = JSON.parseArray(segmentsJson);
-                    long segmentsCount = segments.size();
+                    int adSegCount = 0;
                     StringJoiner segmentsInfo = new StringJoiner("\n");
                     for (Object obj : segments) {
                         JSONObject jo = (JSONObject) obj;
-                        JSONArray seg = jo.getJSONArray("segment");
-                        if (seg != null && seg.size() == 2) {
-                            double start = seg.getDouble(0); // 开始时间
-                            double end = seg.getDouble(1);   // 结束时间
-                            segmentsInfo.add(formatTime(start) + " - " + formatTime(end));
+                        // 广告
+                        if ("sponsor".equals(jo.getString("category"))) {
+                            adSegCount ++;
+                            JSONArray seg = jo.getJSONArray("segment");
+                            if (seg != null && seg.size() == 2) {
+                                double start = seg.getDouble(0); // 开始时间
+                                double end = seg.getDouble(1);   // 结束时间
+                                segmentsInfo.add(formatTime(start) + " - " + formatTime(end));
+                            }
                         }
                     }
-                    if (segmentsCount > 0) {
+                    if (adSegCount > 0) {
                         return ArrayMsgUtils.builder()
                                 .text("【⚠该视频可能含有广告⚠】\n" + title + "\n")
                                 .img(picUrl)
@@ -93,7 +97,7 @@ public class BilibiliService {
                                 .text("投稿：" + pubdate + "\n")
                                 .text("简介：" + desc.substring(0, min(desc.length(), 57)) + "\n")
                                 .text("ID：av" + aid + "\n")
-                                .text("⚠疑似广告片段(" + segmentsCount + ")：\n")
+                                .text("⚠疑似广告片段(" + adSegCount + ")：\n")
                                 .text(segmentsInfo.toString())
                                 .build();
                     }
