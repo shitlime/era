@@ -85,16 +85,16 @@ public class TextToImagePlugin extends BotPlugin {
      * @param tofu
      */
     private void sendImage(Bot bot, AnyMessageEvent event, String tofu) {
-        log.info("渲染豆腐块{}", tofu);
+        log.info("渲染豆腐块：{}", tofu);
 
-        String base64;
+        byte[] img;
         if (tofu.codePoints().count() > 17) {
-            base64 = textToImageService.longToImageBase64(tofu);
+            img = textToImageService.longToImage(tofu);
         } else {
-            base64 = textToImageService.shortToImageBase64(tofu);
+            img = textToImageService.shortToImage(tofu);
         }
         bot.sendMsg(event, ArrayMsgUtils.builder().reply(event.getMessageId())
-                .img("base64://" + base64).build(), true);
+                .img(img).build(), true);
     }
 
     /**

@@ -80,10 +80,10 @@ public class CharacterSearchService {
             log.info("读取到数据集【{}】，正在装载...", dataset.getPath());
 
             switch (dataset.getDatasetConfig().getType()) {
-                case DatasetTypeEnum.TXT_LINE -> {
+                case TXT_LINE -> {
                     txtLineSearchHandle.load(dataset);
                 }
-                case DatasetTypeEnum.PIC_FILE -> {
+                case PIC_FILE -> {
                     picFileSearchHandle.load(dataset);
                 }
             }
@@ -311,7 +311,7 @@ public class CharacterSearchService {
             msgUtils.text(String.format("【%s】", character));
             List<String> result = picFileSearchHandle.search(dataset, character);
             result.forEach(pic ->
-                    msgUtils.img("base64://" + FileUtils.fileToBase64(pic)));
+                    msgUtils.img(FileUtils.fileGetBytes(pic)));
         }
         return msgUtils.build();
     }

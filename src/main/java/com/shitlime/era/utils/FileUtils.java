@@ -14,7 +14,7 @@ import java.util.Base64;
 @Slf4j
 public class FileUtils {
     /**
-     * 计算文件的 base64 值
+     * 【废弃】 计算文件的 base64 值
      *
      * @param path
      * @return
@@ -25,6 +25,20 @@ public class FileUtils {
             byte[] bytes = stream.readAllBytes();
             stream.close();
             return Base64.getEncoder().encodeToString(bytes);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 读取文件的所有字节 （适用于小文件）
+     * @param path
+     * @return
+     */
+    public static byte[] fileGetBytes(String path) {
+        log.info("读取文件所有字节：{}", path);
+        try (BufferedInputStream stream = new BufferedInputStream(new FileInputStream(path))) {
+            return stream.readAllBytes();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -34,11 +33,11 @@ public class TextToImageService {
      * @param text
      * @return
      */
-    public String longToImageBase64(String text) {
+    public byte[] longToImage(String text) {
         PageSettingDTO pageSettingDTO = getPageContentDTO();
         pageSettingDTO.setContent(text);
         String html = buildPage(pageSettingDTO);
-        return Base64.getEncoder().encodeToString(screenshot(html));
+        return screenshot(html);
     }
 
     /**
@@ -46,7 +45,7 @@ public class TextToImageService {
      * @param text
      * @return
      */
-    public String shortToImageBase64(String text) {
+    public byte[] shortToImage(String text) {
         PageSettingDTO pageSettingDTO = getPageContentDTO();
         pageSettingDTO.setFontSize(80);
         pageSettingDTO.setBorder(0);
@@ -56,7 +55,7 @@ public class TextToImageService {
         pageSettingDTO.setPaddingRight(0);
         pageSettingDTO.setContent(text);
         String html = buildPage(pageSettingDTO);
-        return Base64.getEncoder().encodeToString(screenshot(html));
+        return screenshot(html);
     }
 
     /**
