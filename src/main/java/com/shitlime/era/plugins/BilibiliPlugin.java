@@ -26,7 +26,8 @@ public class BilibiliPlugin extends BotPlugin {
     @Override
     public int onAnyMessage(Bot bot, AnyMessageEvent event) {
         if (event.getArrayMsg().stream().anyMatch(m ->
-                m.getData().get("text").matches(".*BV[0-9a-zA-Z]{10}.*"))) {
+                m.getData().get("text") != null &&
+                        m.getData().get("text").matches(".*BV[0-9a-zA-Z]{10}.*"))) {
             // 识别到BV号自动发送视屏基本信息
             String msgPlain = EraBotUtils.getMsgPlain(event.getArrayMsg());
             Pattern pattern = Pattern.compile("BV[0-9a-zA-Z]{10}", Pattern.MULTILINE);

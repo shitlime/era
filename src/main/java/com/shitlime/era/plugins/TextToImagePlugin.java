@@ -103,6 +103,7 @@ public class TextToImagePlugin extends BotPlugin {
      */
     private String getCmd() {
         String perfix = eraConfig.getBot().getCmd();
+        // 如果前缀是一个特殊字符 "|" 或 "\\"（即 | 或 \），就对它进行转义（前面加一个 \）
         perfix = perfix.matches("(?:\\||\\\\)")? "\\"+perfix : perfix;
         StringJoiner joiner = new StringJoiner("|", "(?:", ")");
         keywords.forEach(joiner::add);
