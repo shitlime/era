@@ -1,7 +1,6 @@
 package com.shitlime.era.task;
 
 import com.alibaba.fastjson2.JSON;
-import com.microsoft.playwright.Page;
 import com.mikuac.shiro.common.utils.ArrayMsgUtils;
 import com.mikuac.shiro.common.utils.ShiroUtils;
 import com.mikuac.shiro.core.Bot;
@@ -13,11 +12,11 @@ import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 import com.shitlime.era.config.EraConfig;
-import com.shitlime.era.handle.impl.PlaywrightHandle;
 import com.shitlime.era.mapper.RssSourceMapper;
 import com.shitlime.era.mapper.RssSubscriptionMapper;
 import com.shitlime.era.pojo.entry.RssSource;
 import com.shitlime.era.pojo.entry.RssSubscription;
+import com.shitlime.era.service.UrlToScreenshotService;
 import com.shitlime.era.utils.JsoupUtils;
 import com.shitlime.era.utils.TableUtils;
 import jakarta.annotation.Resource;
@@ -37,8 +36,6 @@ import java.util.*;
 @Slf4j
 @Component
 public class RssTask {
-    private Page page;
-
     @Resource
     private BotContainer botContainer;
     @Autowired
@@ -50,7 +47,7 @@ public class RssTask {
     @Autowired
     private TableUtils tableUtils;
     @Autowired
-    private PlaywrightHandle playwrightHandle;
+    private UrlToScreenshotService urlToScreenshotService;
 
     @Scheduled(cron = "0 */12 * * * ?")
     public void fetchRss() {
@@ -68,7 +65,6 @@ public class RssTask {
             return;
         }
         try {
-            this.page = playwrightHandle.newPage();
             List<RssSource> rssSources = rssSourceMapper.selectByIds(sourceIds);
 
             for (RssSource rssSource : rssSources) {
@@ -126,7 +122,6 @@ public class RssTask {
                 }
             }
         } finally {
-            this.page.close();
             log.info("rss订阅更新任务执行完毕。");
         }
     }
@@ -158,16 +153,11 @@ public class RssTask {
         List<String> msgList = new ArrayList<>();
         msgList.add(ShiroUtils.arrayMsgToCode(msg));
         msgList.add(entry.getLink());
-        String webScreenshot;
-        try {
-            playwrightHandle.navigate(this.page, entry.getLink());
-            webScreenshot = Base64.getEncoder().encodeToString(
-                    this.page.screenshot(new Page.ScreenshotOptions().setFullPage(true)));
-            msgList.add(ShiroUtils.arrayMsgToCode(ArrayMsgUtils.builder()
-                    .img("base64://" + webScreenshot).build()));
-        } catch (RuntimeException e) {
-            log.info(e.toString());
+        byte[] screenshot = urlToScreenshotService.getScreenshot(entry.getLink());
+        if (screenshot != null) {
+            msgList.add(ShiroUtils.arrayMsgToCode(ArrayMsgUtils.builder().img(screenshot).build()));
         }
+
         return ShiroUtils.generateForwardMsg(msgList);
     }
 }
