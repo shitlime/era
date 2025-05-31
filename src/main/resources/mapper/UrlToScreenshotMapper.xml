@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shitlime.era.mapper.UrlToScreenshotMapper">
+    <update id="createTable">
+        create table url_to_screenshot (
+            id integer primary key autoincrement not null,
+            domain_name text not null,
+            enable boolean not null,
+            group_id integer,
+            user_id integer not null,
+            update_time datetime not null,
+            create_time datetime not null
+        );
+    </update>
+
+    <delete id="dropTable">
+        drop table url_to_screenshot;
+    </delete>
+
+    <insert id="insert">
+        insert into url_to_screenshot (id, domain_name, enable, group_id, user_id, update_time, create_time)
+        values (#{id}, #{domainName}, #{enable}, #{groupId}, #{userId}, #{updateTime}, #{createTime})
+    </insert>
+
+    <select id="select" resultType="com.shitlime.era.pojo.entry.UrlToScreenshot">
+        select * from url_to_screenshot
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="domainName != null">
+                and domain_name = #{domainName}
+            </if>
+            <if test="enable != null">
+                and enable = #{enable}
+            </if>
+            <if test="groupId != null">
+                and group_id = #{groupId}
+            </if>
+             <if test="groupId == null">
+                and group_id is null
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="delete">
+        delete from url_to_screenshot
+        where id=#{id}
+    </delete>
+
+    <update id="enable">
+        update url_to_screenshot
+        set enable=true
+        where id=#{id}
+    </update>
+
+    <update id="disable">
+        update url_to_screenshot
+        set enable=false
+        where id=#{id}
+    </update>
+</mapper>
