@@ -8,12 +8,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
+/**
+ * 具有会话的插件类
+ */
 public abstract class SessionPlugin extends BotPlugin {
     private final List<Map<String, Map<Long, Long>>> sessionList = new CopyOnWriteArrayList<>();
     private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
     /**
-     * 判断当前插件是否有独享会话
+     * 判断当前插件是否有独享（群内单人独占）会话
      *
      * @param event      onebot event
      * @param sessionTag tag 用于区分不同的会话
@@ -28,7 +31,7 @@ public abstract class SessionPlugin extends BotPlugin {
     }
 
     /**
-     * 判断当前插件是否有共享会话
+     * 判断当前插件是否有共享（群内多人共享）会话
      *
      * @param event      onebot event
      * @param sessionTag tag 用于区分不同的会话
@@ -81,7 +84,7 @@ public abstract class SessionPlugin extends BotPlugin {
     }
 
     /**
-     * 打开一个独享会话
+     * 打开一个独享（群内单人独占）会话
      * @param event      onebot event
      * @param sessionTag tag 用于区分不同的会话
      * @param timeToLive 会话超时时间
@@ -92,7 +95,7 @@ public abstract class SessionPlugin extends BotPlugin {
     }
 
     /**
-     * 打开一个共享会话
+     * 打开一个共享（群内多人共享）会话
      *
      * @param event      onebot event
      * @param sessionTag tag 用于区分不同的会话
@@ -124,8 +127,9 @@ public abstract class SessionPlugin extends BotPlugin {
     (Map<String, Map<Long, Long>> sessionData, int timeToLive, Runnable timeoutAction) {
         sessionList.add(sessionData);
         executor.schedule(() -> {
-            sessionList.remove(sessionData);
-            timeoutAction.run();
+            if (sessionList.remove(sessionData)) {
+                timeoutAction.run();
+            }
         }, timeToLive, TimeUnit.SECONDS);
         return true;
     }
