@@ -94,6 +94,10 @@ public class UrlToScreenshotService {
             return null;
         }
 
+        if (groupId != null) {
+            // 群内规则。不需要匹配用户id
+            userId = null;
+        }
         UrlToScreenshot us = new UrlToScreenshot();
         us.setUserId(userId);
         us.setGroupId(groupId);
@@ -139,6 +143,10 @@ public class UrlToScreenshotService {
             return false;
         }
 
+        if (urlToScreenshotDTO.getGroupId() != null) {
+            // 群内规则。不需要匹配用户id
+            urlToScreenshotDTO.setUserId(null);
+        }
         UrlToScreenshot us = new UrlToScreenshot();
         us.setDomainName(urlToScreenshotDTO.getDomainName());
         us.setUserId(urlToScreenshotDTO.getUserId());
