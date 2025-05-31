@@ -107,8 +107,13 @@ public class UrlToScreenshotPlugin extends SessionPlugin {
         urlToScreenshotDTO.setUserId(event.getUserId());
         if (urlToScreenshotService.checkRule(urlToScreenshotDTO)) {
             byte[] screenshot = urlToScreenshotService.getScreenshot(url);
-            bot.sendMsg(event, ArrayMsgUtils.builder()
-                    .reply(event.getMessageId()).img(screenshot).build(), true);
+            if (screenshot != null) {
+                log.info("截图完成。{}Bytes", screenshot.length);
+                bot.sendMsg(event, ArrayMsgUtils.builder()
+                        .reply(event.getMessageId()).img(screenshot).build(), true);
+            } else {
+                log.info("截图失败。");
+            }
             return MESSAGE_BLOCK;
         }
         return MESSAGE_IGNORE;
