@@ -18,6 +18,7 @@ import java.util.List;
 public class PlaywrightHandle {
     private Playwright playwright;
     private Browser browser;
+    private BrowserContext context;
 
     @PostConstruct
     public void init() {
@@ -40,6 +41,14 @@ public class PlaywrightHandle {
         ));
         launchOptions.setTimeout(25000);
         this.browser = playwright.chromium().launch(launchOptions);
+        this.context = this.browser.newContext(new Browser.NewContextOptions()
+                .setUserAgent(
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" +
+                        " Chrome/124.0.6367.118 Safari/537.36")
+                .setLocale("zh-CN")
+                .setTimezoneId("Asia/Shanghai")
+                .setViewportSize(1280, 720)
+        );
 
         // 注册 JVM 退出钩子
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -68,8 +77,8 @@ public class PlaywrightHandle {
 
     @PreDestroy
     public void shutdown() {
-        if (browser != null) browser.close();
-        if (playwright != null) playwright.close();
+        if (browser != null) closeBrowser();
+        if (playwright != null) closePlaywright();
     }
 
     public Response navigate(Page page, File file) {
@@ -95,10 +104,19 @@ public class PlaywrightHandle {
     }
 
     public Page newPage() {
-        return this.browser.newPage();
+        Page page = this.context.newPage();
+        // 反检测脚本
+        page.addInitScript("() => {"
+                + "Object.defineProperty(navigator, 'webdriver', {get: () => undefined});"
+                + "window.chrome = {runtime: {}};"
+                + "Object.defineProperty(navigator, 'languages', {get: () => ['zh-CN', 'zh']});"
+                + "Object.defineProperty(navigator, 'plugins', {get: () => [1, 2, 3, 4, 5]});"
+                + "}");
+        return page;
     }
 
     public void closeBrowser() {
+        this.context.close();
         this.browser.close();
     }
 
