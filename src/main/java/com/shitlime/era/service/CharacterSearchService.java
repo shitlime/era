@@ -3,6 +3,7 @@ package com.shitlime.era.service;
 import com.mikuac.shiro.common.utils.ArrayMsgUtils;
 import com.mikuac.shiro.common.utils.ShiroUtils;
 import com.mikuac.shiro.model.ArrayMsg;
+import com.shitlime.era.handle.impl.PicZipSearchHandle;
 import com.shitlime.era.pojo.dto.Dataset;
 import com.shitlime.era.config.EraConfig;
 import com.shitlime.era.enums.DatasetTypeEnum;
@@ -45,6 +46,8 @@ public class CharacterSearchService {
     @Autowired
     PicFileSearchHandle picFileSearchHandle;
     @Autowired
+    PicZipSearchHandle picZipSearchHandle;
+    @Autowired
     UnicodeSearchHandle unicodeSearchHandle;
     @Autowired
     private TableUtils tableUtils;
@@ -86,6 +89,9 @@ public class CharacterSearchService {
                 case PIC_FILE -> {
                     picFileSearchHandle.load(dataset);
                 }
+                case PIC_ZIP -> {
+                    picZipSearchHandle.load(dataset);
+                }
             }
             datasetList.add(dataset);
 
@@ -113,6 +119,9 @@ public class CharacterSearchService {
                     }
                     case PIC_FILE -> {
                         return picFileSearch(dataset, keyword);
+                    }
+                    case PIC_ZIP -> {
+                        return picZipSearch(dataset, keyword);
                     }
                 }
             }
@@ -145,6 +154,10 @@ public class CharacterSearchService {
                 case PIC_FILE -> {
                     msgList.add(ShiroUtils.arrayMsgToCode(
                             picFileSearch(dataset, keyword)));
+                }
+                case PIC_ZIP -> {
+                    msgList.add(ShiroUtils.arrayMsgToCode(
+                            picZipSearch(dataset, keyword)));
                 }
             }
         }
@@ -312,6 +325,25 @@ public class CharacterSearchService {
             List<String> result = picFileSearchHandle.search(dataset, character);
             result.forEach(pic ->
                     msgUtils.img(FileUtils.fileGetBytes(pic)));
+        }
+        return msgUtils.build();
+    }
+
+    /**
+     * 图片Zip包数据集搜索逻辑
+     *
+     * @param dataset
+     * @param string
+     * @return
+     */
+    private List<ArrayMsg> picZipSearch(Dataset dataset, String string) {
+        ArrayMsgUtils msgUtils = ArrayMsgUtils.builder()
+                .text(String.format("[%s]\n", dataset.getDatasetConfig().getName()));
+        for (int codePoint : string.codePoints().toArray()) {
+            String character = UnicodeUtils.unicodeToCharacter(codePoint);
+            msgUtils.text(String.format("【%s】", character));
+            List<byte[]> result = picZipSearchHandle.search(dataset, character);
+            result.forEach(msgUtils::img);
         }
         return msgUtils.build();
     }
