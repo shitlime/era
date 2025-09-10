@@ -1,6 +1,6 @@
-# Blocks-16.0.0.txt
-# Date: 2024-02-02
-# © 2024 Unicode®, Inc.
+# Blocks-17.0.0.txt
+# Date: 2025-08-01
+# © 2025 Unicode®, Inc.
 # Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
 # For terms of use and license, see https://www.unicode.org/terms_of_use.html
 #
@@ -217,8 +217,8 @@ FFF0..FFFF; Specials | 特殊字符
 104B0..104FF; Osage | 奥塞奇文
 10500..1052F; Elbasan | 埃尔巴桑文
 10530..1056F; Caucasian Albanian | 高加索阿尔巴尼亚文
-10570..105BF; Vithkuqi
-105C0..105FF; Todhri
+10570..105BF; Vithkuqi | 维特库奇文
+105C0..105FF; Todhri | 托德里文
 10600..1077F; Linear A | 线形文字A
 10780..107BF; Latin Extended-F | 拉丁文扩展-F
 10800..1083F; Cypriot Syllabary | 塞浦路斯音节文字
@@ -228,6 +228,7 @@ FFF0..FFFF; Specials | 特殊字符
 108E0..108FF; Hatran | 哈特拉文
 10900..1091F; Phoenician | 腓尼基文
 10920..1093F; Lydian | 吕底亚文
+10940..1095F; Sidetic | 西德提克文
 10980..1099F; Meroitic Hieroglyphs | 梅罗埃象形文字
 109A0..109FF; Meroitic Cursive | 梅罗埃草书
 10A00..10A5F; Kharoshthi | 卡罗须提文
@@ -241,7 +242,7 @@ FFF0..FFFF; Specials | 特殊字符
 10C00..10C4F; Old Turkic | 古突厥文
 10C80..10CFF; Old Hungarian | 古匈牙利文
 10D00..10D3F; Hanifi Rohingya | 哈尼斐罗兴亚文
-10D40..10D8F; Garay
+10D40..10D8F; Garay | 加雷文
 10E60..10E7F; Rumi Numeral Symbols | 鲁米数字符号
 10E80..10EBF; Yezidi | 耶兹迪文
 10EC0..10EFF; Arabic Extended-C | 阿拉伯语扩展 C
@@ -261,7 +262,7 @@ FFF0..FFFF; Specials | 特殊字符
 11280..112AF; Multani | 穆尔坦文
 112B0..112FF; Khudawadi | 胡达瓦迪文
 11300..1137F; Grantha | 格兰塔文
-11380..113FF; Tulu-Tigalari
+11380..113FF; Tulu-Tigalari | 图卢-提伽拉里文
 11400..1147F; Newa | 新阿文
 11480..114DF; Tirhuta | 提尔胡塔文
 11580..115FF; Siddham | 悉昙文
@@ -279,15 +280,17 @@ FFF0..FFFF; Specials | 特殊字符
 11AB0..11ABF; Unified Canadian Aboriginal Syllabics Extended-A | 加拿大原住民统一音节文字扩展-A
 11AC0..11AFF; Pau Cin Hau | 泼金豪文
 11B00..11B5F; Devanagari Extended-A | 梵文字母扩展-A
-11BC0..11BFF; Sunuwar
+11B60..11B7F; Sharada Supplement | 夏拉达文补充
+11BC0..11BFF; Sunuwar | 苏努瓦尔文
 11C00..11C6F; Bhaiksuki | 布海书吉文
 11C70..11CBF; Marchen | 马尔琴文
 11D00..11D5F; Masaram Gondi | 马萨兰冈迪文
 11D60..11DAF; Gunjala Gondi | 冈贾拉冈迪文
+11DB0..11DEF; Tolong Siki | 托隆西基文
 11EE0..11EFF; Makasar | 马卡萨尔文
-11F00..11F5F; Kawi
+11F00..11F5F; Kawi | 卡威文
 11FB0..11FBF; Lisu Supplement | 傈僳文补充
-11FC0..11FFF; Tamil Supplement | 泰米尔语补编
+11FC0..11FFF; Tamil Supplement | 泰米尔语补充
 12000..123FF; Cuneiform | 楔形文字
 12400..1247F; Cuneiform Numbers and Punctuation | 楔形文字数字和标点
 12480..1254F; Early Dynastic Cuneiform | 早期王朝楔形文字
@@ -296,20 +299,22 @@ FFF0..FFFF; Specials | 特殊字符
 13430..1345F; Egyptian Hieroglyph Format Controls | 埃及象形文字格式控制
 13460..143FF; Egyptian Hieroglyphs Extended-A | 埃及象形文字扩展-A
 14400..1467F; Anatolian Hieroglyphs | 安纳托利亚象形文字
-16100..1613F; Gurung Khema
+16100..1613F; Gurung Khema | 廓隆语克玛文区
 16800..16A3F; Bamum Supplement | 巴姆穆文补充
 16A40..16A6F; Mro | 勐罗文
 16A70..16ACF; Tangsa | 唐萨
 16AD0..16AFF; Bassa Vah | 巴萨瓦文
 16B00..16B8F; Pahawh Hmong | 帕豪苗文
-16D40..16D7F; Kirat Rai
+16D40..16D7F; Kirat Rai | 基拉特-拉伊文
 16E40..16E9F; Medefaidrin | 梅德费德林文
+16EA0..16EDF; Beria Erfe | 扎格哈瓦语
 16F00..16F9F; Miao | 苗文
 16FE0..16FFF; Ideographic Symbols and Punctuation | 表意符号和标点
 17000..187FF; Tangut | 西夏文
 18800..18AFF; Tangut Components | 西夏文部件
 18B00..18CFF; Khitan Small Script | 契丹小字
 18D00..18D7F; Tangut Supplement | 西夏文补充
+18D80..18DFF; Tangut Components Supplement | 西夏部件补充
 1AFF0..1AFFF; Kana Extended-B | 假名扩展-B
 1B000..1B0FF; Kana Supplement | 假名补充
 1B100..1B12F; Kana Extended-A | 假名扩展-A
@@ -318,6 +323,7 @@ FFF0..FFFF; Specials | 特殊字符
 1BC00..1BC9F; Duployan | 杜普洛延速记
 1BCA0..1BCAF; Shorthand Format Controls | 速记格式控制
 1CC00..1CEBF; Symbols for Legacy Computing Supplement | 旧式计算符号补充
+1CEC0..1CEFF; Miscellaneous Symbols Supplement | 杂项符号增补
 1CF00..1CFCF; Znamenny Musical Notation | Znamenny 音乐记谱法
 1D000..1D0FF; Byzantine Musical Symbols | 拜占庭音乐符号
 1D100..1D1FF; Musical Symbols | 音乐符号
@@ -334,8 +340,9 @@ FFF0..FFFF; Specials | 特殊字符
 1E100..1E14F; Nyiakeng Puachue Hmong | 颇丘苗文
 1E290..1E2BF; Toto | 托托文
 1E2C0..1E2FF; Wancho | 万乔文
-1E4D0..1E4FF; Nag Mundari
-1E5D0..1E5FF; Ol Onal
+1E4D0..1E4FF; Nag Mundari | 纳格木达里字母
+1E5D0..1E5FF; Ol Onal | 奥尔-奥纳尔语
+1E6C0..1E6FF; Tai Yo | 德宏傣语
 1E7E0..1E7FF; Ethiopic Extended-B | 埃塞俄比亚文扩展-B
 1E800..1E8DF; Mende Kikakui | 门德基卡库文
 1E900..1E95F; Adlam | 阿德拉姆文
@@ -367,6 +374,7 @@ FFF0..FFFF; Specials | 特殊字符
 2F800..2FA1F; CJK Compatibility Ideographs Supplement | 中日韩兼容表意文字补充
 30000..3134F; CJK Unified Ideographs Extension G | 中日韩统一表意文字扩展G
 31350..323AF; CJK Unified Ideographs Extension H | 中日韩统一表意文字扩展H
+323B0..3347F; CJK Unified Ideographs Extension J | 中日韩统一表意文字扩展J
 E0000..E007F; Tags | 标签
 E0100..E01EF; Variation Selectors Supplement | 选择变体补充
 F0000..FFFFF; Supplementary Private Use Area-A | 辅助专用区-A
