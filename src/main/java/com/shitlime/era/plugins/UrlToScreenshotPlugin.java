@@ -5,7 +5,7 @@ import com.mikuac.shiro.common.utils.ArrayMsgUtils;
 import com.mikuac.shiro.core.Bot;
 import com.mikuac.shiro.dto.action.common.ActionData;
 import com.mikuac.shiro.dto.action.common.MsgId;
-import com.mikuac.shiro.dto.action.response.GetMsgResp;
+import com.mikuac.shiro.dto.action.response.MsgResp;
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent;
 import com.mikuac.shiro.enums.MsgTypeEnum;
 import com.mikuac.shiro.model.ArrayMsg;
@@ -301,12 +301,12 @@ public class UrlToScreenshotPlugin extends SessionPlugin {
      * @return
      */
     private int cmdUrlToScreenshot(Bot bot, AnyMessageEvent event) {
-        String replyMsg = null;
+        List<ArrayMsg> replyMsg = null;
         for (ArrayMsg arrayMsg : event.getArrayMsg()) {
             if (MsgTypeEnum.reply.equals(arrayMsg.getType())) {
-                int id = Integer.parseInt(arrayMsg.getData().get("id"));
-                ActionData<GetMsgResp> data = bot.getMsg(id);
-                replyMsg = data.getData().getRawMessage();
+                int id = arrayMsg.getData().path("id").asInt();
+                ActionData<MsgResp> data = bot.getMsg(id);
+                replyMsg = data.getData().getArrayMsg();
                 break;
             }
         }
@@ -315,7 +315,7 @@ public class UrlToScreenshotPlugin extends SessionPlugin {
         }
 
         // 提取url
-        Matcher matcher = urlPattern.matcher(replyMsg);
+        Matcher matcher = urlPattern.matcher(EraBotUtils.getMsgPlain(replyMsg));
         if (!matcher.find()) {
             return MESSAGE_IGNORE;
         }

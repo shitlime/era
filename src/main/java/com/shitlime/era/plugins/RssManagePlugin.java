@@ -98,29 +98,7 @@ public class RssManagePlugin extends SessionPlugin {
             return MESSAGE_BLOCK;
         } else if (getHelpCmd().equals(event.getMessage())) {
             // 帮助
-            log.info("打开rss帮助");
-
-            StringJoiner joiner = new StringJoiner("\n");
-            joiner.add("　　【RSS插件】");
-            joiner.add("by: Shitlime 2024-04-24");
-            joiner.add("------ 帮助 ------");
-            joiner.add("1.订阅新的RSS：");
-            joiner.add(getAddCmd());
-            joiner.add("2.查看已订阅RSS：");
-            joiner.add(getShowCmd());
-            joiner.add("3.删除订阅的RSS：");
-            joiner.add(getRemoveCmd());
-            joiner.add("4.启用RSS：");
-            joiner.add(getEnableCmd());
-            joiner.add("5.禁用RSS：");
-            joiner.add(getDisableCmd());
-            joiner.add("6.查看本帮助：");
-            joiner.add(getHelpCmd());
-            joiner.add("※群组内仅群主/管理有权限");
-
-            bot.sendMsg(event, ArrayMsgUtils.builder()
-                    .text(joiner.toString()).build(), true);
-            return MESSAGE_BLOCK;
+            return openHelp(bot, event);
         } else if (event.getMessage().matches(getAddCmd())) {
             // 订阅
             Pattern pattern = Pattern.compile(getAddCmd());
@@ -199,6 +177,38 @@ public class RssManagePlugin extends SessionPlugin {
             return MESSAGE_BLOCK;
         }
         return MESSAGE_IGNORE;
+    }
+
+    /**
+     * 帮助
+     * @param bot
+     * @param event
+     * @return
+     */
+    private int openHelp(Bot bot, AnyMessageEvent event) {
+        log.info("打开rss帮助");
+
+        StringJoiner joiner = new StringJoiner("\n");
+        joiner.add("　　【RSS插件】");
+        joiner.add("by: Shitlime 2024-04-24");
+        joiner.add("------ 帮助 ------");
+        joiner.add("1.订阅新的RSS：");
+        joiner.add(getAddCmd());
+        joiner.add("2.查看已订阅RSS：");
+        joiner.add(getShowCmd());
+        joiner.add("3.删除订阅的RSS：");
+        joiner.add(getRemoveCmd());
+        joiner.add("4.启用RSS：");
+        joiner.add(getEnableCmd());
+        joiner.add("5.禁用RSS：");
+        joiner.add(getDisableCmd());
+        joiner.add("6.查看本帮助：");
+        joiner.add(getHelpCmd());
+        joiner.add("※以上群组内仅群主/管理有权限");
+
+        bot.sendMsg(event, ArrayMsgUtils.builder()
+                .text(joiner.toString()).build(), true);
+        return MESSAGE_BLOCK;
     }
 
     private String getHelpCmd() {

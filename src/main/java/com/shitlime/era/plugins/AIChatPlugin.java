@@ -33,10 +33,10 @@ public class AIChatPlugin extends SessionPlugin {
                 && eraConfig.getBot().getId().equals(atList.getFirst())
                 && event.getArrayMsg().stream().anyMatch(arrayMsg ->
                 (MsgTypeEnum.text.equals(arrayMsg.getType())
-                        && arrayMsg.getData().get("text") != null
-                        && !arrayMsg.getData().get("text").isBlank()
+                        && arrayMsg.getStringData("text") != null
+                        && !arrayMsg.getStringData("text").isBlank()
                         && String.format("%s清除", eraConfig.getBot().getCmd())
-                        .equals(arrayMsg.getData().get("text").strip())))
+                        .equals(arrayMsg.getStringData("text").strip())))
         ) {
             // 清除聊天历史
             log.info("{}清除了AI聊天历史记录", event.getSender().getNickname());

@@ -1,6 +1,7 @@
 package com.shitlime.era.task;
 
-import com.alibaba.fastjson2.JSON;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mikuac.shiro.common.utils.ArrayMsgUtils;
 import com.mikuac.shiro.common.utils.ShiroUtils;
 import com.mikuac.shiro.core.Bot;
@@ -49,6 +50,12 @@ public class RssTask {
     @Autowired
     private UrlToScreenshotService urlToScreenshotService;
 
+    private final ObjectMapper objectMapper;
+
+    public RssTask (ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
     @Scheduled(cron = "0 */12 * * * ?")
     public void fetchRss() {
         if (!tableUtils.isExist(RssSubscriptionMapper.tableName)
@@ -65,60 +72,69 @@ public class RssTask {
             return;
         }
         try {
+            // 获取 bot
+            Bot bot = botContainer.robots.get(eraConfig.getBot().getId());
+
             List<RssSource> rssSources = rssSourceMapper.selectByIds(sourceIds);
 
             for (RssSource rssSource : rssSources) {
-                List<String> latestFeed = JSON.parseArray(rssSource.getLatestFeed(), String.class);
-                String url = rssSource.getUrl();
-                SyndFeed feed;
                 try {
-                    URLConnection connection = new URI(url).toURL().openConnection();
-                    connection.setConnectTimeout(20 * 1000);
-                    connection.setReadTimeout(20 * 1000);
-                    feed = new SyndFeedInput().build(new XmlReader(connection.getInputStream()));
-                } catch (FeedException | IOException | URISyntaxException e) {
-                    log.info(e.toString());
-                    continue;
-                }
-
-                // 处理 feed entries （操作：倒序、去重）
-                List<SyndEntry> entryList = new ArrayList<>();
-                for (SyndEntry entry : feed.getEntries().reversed()) {
-                    if (!entryList.contains(entry)) {
-                        entryList.add(entry);
+                    List<String> latestFeed = objectMapper.readValue(rssSource.getLatestFeed(),
+                            new TypeReference<List<String>>() {
+                            });
+                    String url = rssSource.getUrl();
+                    SyndFeed feed;
+                    try {
+                        URLConnection connection = new URI(url).toURL().openConnection();
+                        connection.setConnectTimeout(20 * 1000);
+                        connection.setReadTimeout(20 * 1000);
+                        feed = new SyndFeedInput().build(new XmlReader(connection.getInputStream()));
+                    } catch (FeedException | IOException | URISyntaxException e) {
+                        log.info(e.toString());
+                        continue;
                     }
-                }
 
-                boolean hasUpdate = false;
-                for (SyndEntry entry : entryList) {
-                    if (latestFeed.stream().noneMatch(l -> l.equals(entry.getLink()))) {
-                        // 如果有新的entry
-                        hasUpdate = true;
-
-                        // 构建消息
-                        List<Map<String, Object>> fwmsg = buildRssMessage(rssSource, entry);
-
-                        // 给所有订阅者发送消息
-                        List<RssSubscription> rssSubscriptions = rssSubscriptionMapper
-                                .selectEnableBySourceId(rssSource.getId());
-                        for (RssSubscription rssSubscription : rssSubscriptions) {
-                            Bot bot = botContainer.robots.get(eraConfig.getBot().getId());
-                            if (rssSubscription.getGroupId() != null) {
-                                bot.sendGroupForwardMsg(rssSubscription.getGroupId(), fwmsg);
-                            } else {
-                                bot.sendPrivateForwardMsg(rssSubscription.getUserId(), fwmsg);
-                            }
+                    // 处理 feed entries （操作：倒序、去重）
+                    List<SyndEntry> entryList = new ArrayList<>();
+                    for (SyndEntry entry : feed.getEntries().reversed()) {
+                        if (!entryList.contains(entry)) {
+                            entryList.add(entry);
                         }
-
-                        log.info("{}有新的条目：{}。", feed.getTitle(), entry.getTitle());
                     }
-                }
-                if (hasUpdate) {
-                    // 更新数据库
-                    rssSource.setLatestFeed(JSON.toJSONString(feed.getEntries().stream()
-                            .map(SyndEntry::getLink).toList()));
-                    rssSource.setFetchTime(LocalDateTime.now());
-                    rssSourceMapper.fetch(rssSource);
+
+                    boolean hasUpdate = false;
+                    for (SyndEntry entry : entryList) {
+                        if (latestFeed.stream().noneMatch(l -> l.equals(entry.getLink()))) {
+                            // 如果有新的entry
+                            hasUpdate = true;
+
+                            // 构建消息
+                            List<Map<String, Object>> fwmsg = ShiroUtils.generateForwardMsg(bot,
+                                    buildRssMessage(rssSource, entry));
+
+                            // 给所有订阅者发送消息
+                            List<RssSubscription> rssSubscriptions = rssSubscriptionMapper
+                                    .selectEnableBySourceId(rssSource.getId());
+                            for (RssSubscription rssSubscription : rssSubscriptions) {
+                                if (rssSubscription.getGroupId() != null) {
+                                    bot.sendGroupForwardMsg(rssSubscription.getGroupId(), fwmsg);
+                                } else {
+                                    bot.sendPrivateForwardMsg(rssSubscription.getUserId(), fwmsg);
+                                }
+                            }
+
+                            log.info("{}有新的条目：{}。", feed.getTitle(), entry.getTitle());
+                        }
+                    }
+                    if (hasUpdate) {
+                        // 更新数据库
+                        rssSource.setLatestFeed(objectMapper.writeValueAsString(feed.getEntries().stream()
+                                .map(SyndEntry::getLink).toList()));
+                        rssSource.setFetchTime(LocalDateTime.now());
+                        rssSourceMapper.fetch(rssSource);
+                    }
+                } catch (IOException e) {
+                    log.error(e.toString());
                 }
             }
         } finally {
@@ -126,7 +142,7 @@ public class RssTask {
         }
     }
 
-    private List<Map<String, Object>>
+    private List<List<ArrayMsg>>
     buildRssMessage(RssSource rssSource, SyndEntry entry) {
         StringJoiner joiner = new StringJoiner("\n");
         if (entry.getTitle() != null && !entry.getTitle().isBlank()) {
@@ -150,14 +166,14 @@ public class RssTask {
         List<ArrayMsg> msg = ArrayMsgUtils.builder()
                 .text(joiner.toString()).build();
 
-        List<String> msgList = new ArrayList<>();
-        msgList.add(ShiroUtils.arrayMsgToCode(msg));
-        msgList.add(entry.getLink());
+        List<List<ArrayMsg>> msgList = new ArrayList<>();
+        msgList.add(msg);
+        msgList.add(ArrayMsgUtils.builder().text(entry.getLink()).build());
         byte[] screenshot = urlToScreenshotService.getScreenshot(entry.getLink());
         if (screenshot != null) {
-            msgList.add(ShiroUtils.arrayMsgToCode(ArrayMsgUtils.builder().img(screenshot).build()));
+            msgList.add(ArrayMsgUtils.builder().img(screenshot).build());
         }
 
-        return ShiroUtils.generateForwardMsg(msgList);
+        return msgList;
     }
 }

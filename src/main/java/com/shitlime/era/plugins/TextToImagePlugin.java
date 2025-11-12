@@ -2,11 +2,10 @@ package com.shitlime.era.plugins;
 
 import com.mikuac.shiro.annotation.common.Shiro;
 import com.mikuac.shiro.common.utils.ArrayMsgUtils;
-import com.mikuac.shiro.common.utils.ShiroUtils;
 import com.mikuac.shiro.core.Bot;
 import com.mikuac.shiro.core.BotPlugin;
 import com.mikuac.shiro.dto.action.common.ActionData;
-import com.mikuac.shiro.dto.action.response.GetMsgResp;
+import com.mikuac.shiro.dto.action.response.MsgResp;
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent;
 import com.mikuac.shiro.enums.MsgTypeEnum;
 import com.mikuac.shiro.model.ArrayMsg;
@@ -50,28 +49,22 @@ public class TextToImagePlugin extends BotPlugin {
             MsgTypeEnum.reply.equals(arrayMsg.getType()))
             && event.getArrayMsg().stream().anyMatch(arrayMsg ->
             (MsgTypeEnum.text.equals(arrayMsg.getType())
-                    && arrayMsg.getData().get("text") != null
-                    && !arrayMsg.getData().get("text").isEmpty()
-                    && arrayMsg.getData().get("text").matches(getReplyKeyword())))
+                    && arrayMsg.getStringData("text") != null
+                    && !arrayMsg.getStringData("text").isEmpty()
+                    && arrayMsg.getStringData("text").matches(getReplyKeyword())))
         ) {
             // 回复式渲染
-            String replyMsg = null;
+            List<ArrayMsg> replyMsg = null;
             for (ArrayMsg arrayMsg : event.getArrayMsg()) {
                 if (MsgTypeEnum.reply.equals(arrayMsg.getType())) {
-                    int id = Integer.parseInt(arrayMsg.getData().get("id"));
-                    ActionData<GetMsgResp> data = bot.getMsg(id);
-                    replyMsg = data.getData().getRawMessage();
+                    int id = Integer.parseInt(arrayMsg.getStringData("id"));
+                    ActionData<MsgResp> data = bot.getMsg(id);
+                    replyMsg = data.getData().getArrayMsg();
                     break;
                 }
             }
             if (replyMsg != null && !replyMsg.isEmpty()) {
-                StringBuilder builder = new StringBuilder();
-                ShiroUtils.rawToArrayMsg(replyMsg).forEach(arrayMsg -> {
-                    if (MsgTypeEnum.text.equals(arrayMsg.getType())) {
-                        builder.append(arrayMsg.getData().get("text"));
-                    }
-                });
-                sendImage(bot, event, builder.toString());
+                sendImage(bot, event, EraBotUtils.getMsgPlain(replyMsg));
                 return MESSAGE_BLOCK;
             }
         }
@@ -85,6 +78,10 @@ public class TextToImagePlugin extends BotPlugin {
      * @param tofu
      */
     private void sendImage(Bot bot, AnyMessageEvent event, String tofu) {
+        if (tofu == null || tofu.isEmpty()) {
+            return;
+        }
+
         log.info("渲染豆腐块：{}", tofu);
 
         byte[] img;

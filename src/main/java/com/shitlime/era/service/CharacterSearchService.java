@@ -1,7 +1,6 @@
 package com.shitlime.era.service;
 
 import com.mikuac.shiro.common.utils.ArrayMsgUtils;
-import com.mikuac.shiro.common.utils.ShiroUtils;
 import com.mikuac.shiro.model.ArrayMsg;
 import com.shitlime.era.handle.impl.PicZipSearchHandle;
 import com.shitlime.era.pojo.dto.Dataset;
@@ -135,29 +134,25 @@ public class CharacterSearchService {
      * @param keyword
      * @return
      */
-    public List<String> searchAllDataset(String keyword) {
+    public List<List<ArrayMsg>> searchAllDataset(String keyword) {
         if (datasetList.isEmpty()) {
             return null;
         }
 
-        List<String> msgList = new ArrayList<>();
+        List<List<ArrayMsg>> msgList = new ArrayList<>();
         for (Dataset dataset : datasetList) {
             switch (dataset.getDatasetConfig().getType()) {
                 case UNICODE -> {
-                    msgList.add(ShiroUtils.arrayMsgToCode(
-                            unicodeSearch(dataset, keyword)));
+                    msgList.add(unicodeSearch(dataset, keyword));
                 }
                 case TXT_LINE -> {
-                    msgList.add(ShiroUtils.arrayMsgToCode(
-                            txtLineSearch(dataset, keyword)));
+                    msgList.add(txtLineSearch(dataset, keyword));
                 }
                 case PIC_FILE -> {
-                    msgList.add(ShiroUtils.arrayMsgToCode(
-                            picFileSearch(dataset, keyword)));
+                    msgList.add(picFileSearch(dataset, keyword));
                 }
                 case PIC_ZIP -> {
-                    msgList.add(ShiroUtils.arrayMsgToCode(
-                            picZipSearch(dataset, keyword)));
+                    msgList.add(picZipSearch(dataset, keyword));
                 }
             }
         }

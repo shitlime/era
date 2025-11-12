@@ -1,6 +1,6 @@
 package com.shitlime.era.service;
 
-import com.alibaba.fastjson2.JSON;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mikuac.shiro.common.utils.ArrayMsgUtils;
 import com.mikuac.shiro.model.ArrayMsg;
 import com.rometools.rome.feed.synd.SyndEntry;
@@ -38,6 +38,12 @@ public class RssManageService {
     @Autowired
     private RssSourceMapper rssSourceMapper;
 
+    private final ObjectMapper objectMapper;
+
+    public RssManageService(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
     /**
      * 添加 rss 订阅
      *
@@ -72,7 +78,7 @@ public class RssManageService {
             rssSource = new RssSource();
             rssSource.setUrl(rss.getUrl());
             rssSource.setTitle(feed.getTitle());
-            String feedString = JSON.toJSONString(feed.getEntries().stream()
+            String feedString = objectMapper.writeValueAsString(feed.getEntries().stream()
                     .map(SyndEntry::getLink).toList());
             rssSource.setLatestFeed(feedString);
             rssSource.setFetchTime(now);
@@ -97,6 +103,7 @@ public class RssManageService {
 
     /**
      * 展示 rss 订阅
+     *
      * @param groupId
      * @param userId
      * @return
@@ -137,6 +144,9 @@ public class RssManageService {
         if (groupId != null) {
             userId = null;
         }
+        //fixme 删除多个时如果先删了小的序号，后删大的序号，会错位删除到别的项。
+        //   这是由于删除前、删除时都用一套 index 计算位置导致
+        //   也许需要创建临时的 list 存储 RssSubscription 来解决
         List<RssSubscription> rssList = rssSubscriptionMapper.show(groupId, userId);
 
         if ( index != null && index > 0 && index <= rssList.size()) {
@@ -181,7 +191,7 @@ public class RssManageService {
             connection.setConnectTimeout(20 * 1000);
             connection.setReadTimeout(20 * 1000);
             SyndFeed feed = new SyndFeedInput().build(new XmlReader(connection.getInputStream()));
-            String feedString = JSON.toJSONString(feed.getEntries().stream()
+            String feedString = objectMapper.writeValueAsString(feed.getEntries().stream()
                     .map(SyndEntry::getLink).toList());
             rssSource.setLatestFeed(feedString);
             rssSource.setFetchTime(LocalDateTime.now());

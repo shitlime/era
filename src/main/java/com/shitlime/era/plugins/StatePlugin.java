@@ -4,6 +4,7 @@ import com.mikuac.shiro.annotation.common.Shiro;
 import com.mikuac.shiro.common.utils.ArrayMsgUtils;
 import com.mikuac.shiro.core.Bot;
 import com.mikuac.shiro.core.BotPlugin;
+import com.mikuac.shiro.dto.action.common.ActionData;
 import com.mikuac.shiro.dto.action.response.GetStatusResp;
 import com.mikuac.shiro.dto.event.message.AnyMessageEvent;
 import com.shitlime.era.config.EraConfig;
@@ -46,7 +47,7 @@ public class StatePlugin extends BotPlugin {
         ) {
             log.info("获取运行状态");
             String eraState = stateService.getEraState();
-            GetStatusResp status = bot.getStatus();
+            ActionData<GetStatusResp> status = bot.getStatus();
             String onebotState = stateService.getOnebotStatus(status);
 
             StringJoiner joiner = new StringJoiner("\n");

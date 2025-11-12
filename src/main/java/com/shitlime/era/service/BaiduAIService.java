@@ -1,6 +1,6 @@
 package com.shitlime.era.service;
 
-import com.alibaba.fastjson2.JSON;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shitlime.era.config.EraConfig;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +38,12 @@ public class BaiduAIService {
 
     private List<Map<Long, Map<String, List<Map<String, String>>>>> chatSessionList =
             new CopyOnWriteArrayList<>();
+
+    private final ObjectMapper objectmapper;
+
+    public BaiduAIService(ObjectMapper objectmapper) {
+        this.objectmapper = objectmapper;
+    }
 
     /**
      * 向AI发送信息
@@ -125,17 +131,18 @@ public class BaiduAIService {
      */
     private synchronized String sendMsgData(Map<String, Object> msgData) {
         try (HttpClient client = HttpClient.newHttpClient()) {
+            String jsonMsg = objectmapper.writeValueAsString(msgData);
             HttpRequest request2 = HttpRequest.newBuilder()
                     .uri(new URI(String.format("https://aip.baidubce.com/rpc/2.0/ai_custom/v1" +
                                     "/wenxinworkshop/chat/%s?access_token=%s",
                             eraConfig.getPlugin().getAiChat().getBaidu().getModelId(),
                             getAccessToken())))
                     .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(JSON.toJSONString(msgData)))
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonMsg))
                     .build();
             HttpResponse<String> response = client.send(request2, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
-                Map map = JSON.parseObject(response.body(), Map.class);
+                Map map = objectmapper.readValue(response.body(), Map.class);
                 log.debug("response={}", response);
                 Object result = map.get("result");
                 if (result != null) {
@@ -207,7 +214,7 @@ public class BaiduAIService {
                     .build();
             HttpResponse<String> result =
                     client.send(request, HttpResponse.BodyHandlers.ofString());
-            Map responseData = JSON.parseObject(result.body().toString(), Map.class);
+            Map responseData = objectmapper.readValue(result.body().toString(), Map.class);
             Long expires_in = Instant.now().getEpochSecond()
                     + Long.parseLong(responseData.get(EXPIRES_IN).toString()) - 10;
             responseData.put(EXPIRES_IN, expires_in.toString());

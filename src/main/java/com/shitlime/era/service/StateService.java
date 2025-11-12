@@ -1,5 +1,6 @@
 package com.shitlime.era.service;
 
+import com.mikuac.shiro.dto.action.common.ActionData;
 import com.mikuac.shiro.dto.action.response.GetStatusResp;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,10 @@ import java.util.StringJoiner;
 
 @Service
 public class StateService {
+    /**
+     * 获取本程序的状态
+     * @return
+     */
     public String getEraState() {
         StringJoiner joiner = new StringJoiner("\n");
         joiner.add("----- 大脑 -----");
@@ -44,20 +49,25 @@ public class StateService {
         return joiner.toString();
     }
 
-    public String getOnebotStatus(GetStatusResp status) {
+    /**
+     * 获取 onebot 的状态
+     * @param status
+     * @return
+     */
+    public String getOnebotStatus(ActionData<GetStatusResp> status) {
         StringJoiner joiner = new StringJoiner("\n");
         joiner.add("----- 身体 -----");
 
         // 发送/接收消息次数
         joiner.add(String.format("发送：%s 接收：%s",
-                status.getStat().getMessageSent(), status.getStat().getMessageReceived()));
+                status.getData().getStat().getMessageSent(), status.getData().getStat().getMessageReceived()));
         // 发/收包
         joiner.add(String.format("发包：%s 收包：%s",
-                status.getStat().getPacketSent(), status.getStat().getPacketReceived()));
+                status.getData().getStat().getPacketSent(), status.getData().getStat().getPacketReceived()));
         // 连接断开次数
-        joiner.add(String.format("断开：%s次", status.getStat().getDisconnectTimes()));
+        joiner.add(String.format("断开：%s次", status.getData().getStat().getDisconnectTimes()));
         // 丢包数
-        joiner.add(String.format("丢包：%s", status.getStat().getPacketLost()));
+        joiner.add(String.format("丢包：%s", status.getData().getStat().getPacketLost()));
 
         joiner.add("---------------");
         return joiner.toString();

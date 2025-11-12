@@ -100,14 +100,14 @@ public class CharacterSearchPlugin {
         String keyword = ShiroUtils.escape2(matcher.group(1));
 
         log.info("搜索所有数据集");
-        List<String> msg = characterSearchService.searchAllDataset(keyword);
+        List<List<ArrayMsg>> msg = characterSearchService.searchAllDataset(keyword);
 
         if (msg==null) {
             bot.sendMsg(event, ArrayMsgUtils.builder()
                     .text("目前没有任何数据集").build(), true);
             return;
         }
-        List<Map<String, Object>> fwmsg = ShiroUtils.generateForwardMsg(msg);
+        List<Map<String, Object>> fwmsg = ShiroUtils.generateForwardMsg(bot, msg);
         bot.sendForwardMsg(event, fwmsg);
     }
 

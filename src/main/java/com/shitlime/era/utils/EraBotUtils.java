@@ -37,7 +37,7 @@ public class EraBotUtils {
         StringBuilder builder = new StringBuilder();
         listArrayMsg.forEach(arrayMsg -> {
             if (MsgTypeEnum.text.equals(arrayMsg.getType())) {
-                builder.append(arrayMsg.getData().get("text"));
+                builder.append(arrayMsg.getStringData("text"));
             }
         });
         return builder.toString();
