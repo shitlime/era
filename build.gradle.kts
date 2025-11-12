@@ -28,15 +28,15 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.3")
 	// bot框架
-	implementation("com.mikuac:shiro:2.4.3")
+	implementation("com.mikuac:shiro:2.5.0")
 	// sqlite数据库
-	implementation("org.xerial:sqlite-jdbc:3.45.3.0")
+	implementation("org.xerial:sqlite-jdbc:3.50.3.0")
 	// yaml
-	implementation("org.yaml:snakeyaml:2.2")
+	implementation("org.yaml:snakeyaml:2.5")
 	// rome
 	implementation("com.rometools:rome:2.1.0")
 	// jsoup
-	implementation("org.jsoup:jsoup:1.17.2")
+	implementation("org.jsoup:jsoup:1.21.2")
 	// playwright
 	implementation("com.microsoft.playwright:playwright:1.50.0")
 }
