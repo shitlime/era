@@ -359,7 +359,7 @@ public class UrlToScreenshotPlugin extends SessionPlugin {
         return String.format("%s%s 帮助", eraConfig.getBot().getCmd(), mainCmdName);
     }
     private String getShowCmd() {
-        return String.format("%s%s 查看", eraConfig.getBot().getCmd(), mainCmdName);
+        return String.format("%s%s 规则", eraConfig.getBot().getCmd(), mainCmdName);
     }
     private String getAddCmd() {
         String perfix = eraConfig.getBot().getCmd();
