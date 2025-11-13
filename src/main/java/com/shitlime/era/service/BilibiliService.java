@@ -41,6 +41,7 @@ public class BilibiliService {
             JsonNode rootNode = objectMapper.readTree(videoInfoJson);
             switch (rootNode.path("code").asInt()) {
                 case 0 -> {
+                    ArrayMsgUtils msgBuilder = ArrayMsgUtils.builder();
                     JsonNode data = rootNode.path("data");
                     // 标题
                     String title = data.path("title").asText();
@@ -69,7 +70,6 @@ public class BilibiliService {
                     // ID
                     String aid = data.path("aid").asText();
                     String bvid = data.path("bvid").asText();
-
                     // 查询跳过片段信息
                     String segmentsJson = getVideoSkipSegmentsJson(bvid);
                     if (segmentsJson != null) {
@@ -89,35 +89,28 @@ public class BilibiliService {
                             }
                         }
                         if (adSegCount > 0) {
-                            return ArrayMsgUtils.builder()
-                                    .text("【⚠该视频可能含有广告⚠】\n" + title + "\n")
-                                    .img(picUrl)
-                                    .text("up主：" + ownerName + "\n")
-                                    .text("分区：" + tname + "\n")
-                                    .text("播放：" + String.format("%7d", view) + "|")
-                                    .text("收藏：" + String.format("%7d", favorite) + "\n")
-                                    .text("投币：" + String.format("%7d", coin) + "|")
-                                    .text("点赞：" + String.format("%7d", like) + "\n")
-                                    .text("投稿：" + pubdate + "\n")
-                                    .text("简介：" + desc.substring(0, min(desc.length(), 57)) + "\n")
-                                    .text("ID：av" + aid + "\n")
-                                    .text("⚠疑似广告片段(" + adSegCount + ")：\n")
-                                    .text(segmentsInfo.toString())
-                                    .build();
+                            msgBuilder.text("【⚠该视频被标记广告⚠】\n")
+                                    .text("⚠标记广告片段(" + adSegCount + ")：\n")
+                                    .text(segmentsInfo.toString() + "\n\n");
                         }
                     }
+                    // 警告信息
+                    String argueMsg = data.path("argue_info").path("argue_msg").asText();
+                    if (!argueMsg.isBlank()) {
+                        msgBuilder.text("⚠" + argueMsg + "\n");
+                    }
 
-                    return ArrayMsgUtils.builder()
-                            .text(title + "\n")
+                    return msgBuilder
+                            .text("「" + title + "」\n")
                             .img(picUrl)
                             .text("up主：" + ownerName + "\n")
                             .text("分区：" + tname + "\n")
-                            .text("播放：" + String.format("%7d", view) + "|")
+                            .text("播放：" + String.format("%7d", view) + "　")
                             .text("收藏：" + String.format("%7d", favorite) + "\n")
-                            .text("投币：" + String.format("%7d", coin) + "|")
+                            .text("投币：" + String.format("%7d", coin) + "　")
                             .text("点赞：" + String.format("%7d", like) + "\n")
                             .text("投稿：" + pubdate + "\n")
-                            .text("简介：" + desc.substring(0, min(desc.length(), 57)) + "\n")
+                            .text("简介：" + desc.substring(0, min(desc.length(), 100)) + "\n")
                             .text("ID：av" + aid)
                             .build();
                 }
