@@ -2,6 +2,7 @@ package com.shitlime.era.handle.impl;
 
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.WaitUntilState;
+import com.shitlime.psj.Stealth;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
@@ -42,9 +43,6 @@ public class PlaywrightHandle {
         launchOptions.setTimeout(25000);
         this.browser = playwright.chromium().launch(launchOptions);
         this.context = this.browser.newContext(new Browser.NewContextOptions()
-                .setUserAgent(
-                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" +
-                        " Chrome/124.0.6367.118 Safari/537.36")
                 .setLocale("zh-CN")
                 .setTimezoneId("Asia/Shanghai")
                 .setViewportSize(1280, 720)
@@ -105,13 +103,15 @@ public class PlaywrightHandle {
 
     public Page newPage() {
         Page page = this.context.newPage();
-        // 反检测脚本
-        page.addInitScript("() => {"
-                + "Object.defineProperty(navigator, 'webdriver', {get: () => undefined});"
-                + "window.chrome = {runtime: {}};"
-                + "Object.defineProperty(navigator, 'languages', {get: () => ['zh-CN', 'zh']});"
-                + "Object.defineProperty(navigator, 'plugins', {get: () => [1, 2, 3, 4, 5]});"
-                + "}");
+        return page;
+    }
+
+    public Page newStealthPage() {
+        Page page = this.context.newPage();
+        Stealth.StealthConfig stealthConfig = new Stealth.StealthConfig();
+        stealthConfig.navigatorLanguagesOverride = List.of("zh-CN", "zh");
+        Stealth stealth = new Stealth(stealthConfig);
+        stealth.applyStealth(page);
         return page;
     }
 

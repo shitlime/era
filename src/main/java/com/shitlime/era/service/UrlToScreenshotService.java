@@ -34,7 +34,7 @@ public class UrlToScreenshotService {
      * @return
      */
     public synchronized byte[] getScreenshot(String url) {
-        try (Page page = playwrightHandle.newPage()) {
+        try (Page page = playwrightHandle.newStealthPage()) {
             log.info("访问Url：{}", url);
             playwrightHandle.noFailNavigate(page, url);
             log.info("进行截图…");

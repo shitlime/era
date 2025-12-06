@@ -39,6 +39,7 @@ dependencies {
 	implementation("org.jsoup:jsoup:1.21.2")
 	// playwright
 	implementation("com.microsoft.playwright:playwright:1.50.0")
+    implementation("io.github.shitlime:playwright-stealth-java:0.1")
 }
 
 tasks.withType<Test> {
