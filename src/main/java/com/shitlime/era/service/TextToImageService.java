@@ -87,9 +87,11 @@ public class TextToImageService {
             this.page = playwrightHandle.newPage();
             playwrightHandle.navigate(this.page, pageFile);
         } else {
-            this.page.evaluate(String.format(
-                    "document.open();document.write(\"%s\");document.close();",
-                    html.replace("\"", "\\\"")));
+            this.page.evaluate("htmlContent => { " +
+                    "document.open(); " +
+                    "document.write(htmlContent); " +
+                    "document.close(); " +
+                    "}", html);
         }
     }
 
@@ -140,7 +142,7 @@ public class TextToImageService {
         builder.append("<style>");
         // 字体
         for (String font : page.getFontList()) {
-            builder.append(String.format("@font-face{font-family:'MyFont';src:url('%s');}", font));
+            builder.append(String.format("@font-face{font-family:'MyFont';src:url('file:///%s');}", font));
         }
         builder.append("body{font-family:Arial,'MyFont';}");
         builder.append("#show{");
